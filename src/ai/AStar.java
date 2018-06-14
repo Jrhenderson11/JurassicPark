@@ -18,7 +18,7 @@ public class AStar {
 	 * The cost that should be used when travelling over tiles which are not owned
 	 * by the player
 	 */
-	private static final double RIVER_COST = 4;
+	private static final double RIVER_COST = 10;
 
 	/**
 	 * The possible translations that can be applied to a point to move it in any
@@ -51,6 +51,7 @@ public class AStar {
 	 */
 	private HashMap<Point.Double, Point.Double> parent;
 
+	private List<Point.Double> considered;
 	// -----------
 	// Constructor
 	// -----------
@@ -74,12 +75,13 @@ public class AStar {
 		this.level = level;
 		this.cost = new HashMap<>();
 		this.parent = new HashMap<>();
+
 	}
 
 	// -------
 	// Methods
 	// -------
-	
+
 	/**
 	 * A method to calculate the heuristic which determines how close the current
 	 * point being considered is to the finishing point
@@ -100,10 +102,10 @@ public class AStar {
 	 *         to the finishing point
 	 */
 	public List<Point.Double> getPath() {
-		
+		this.considered = new ArrayList<>();
 		List<Point.Double> path = new LinkedList<>();
-		//quick test to see neither are unreachable
-		if (level.getPos(startPoint)=="x" || level.getPos(finishPoint)=="x") {
+		// quick test to see neither are unreachable
+		if (level.getPos(startPoint) == "x" || level.getPos(finishPoint) == "x") {
 			System.out.println("destination unreachable, stopping");
 			return path;
 		}
@@ -120,7 +122,7 @@ public class AStar {
 				return 0;
 			}
 		});
-		
+
 		Point.Double current = null;
 		ArrayList<Point.Double> visited = new ArrayList<Point.Double>();
 		opened.add(startPoint);
@@ -134,16 +136,16 @@ public class AStar {
 			}
 
 			for (Point.Double t : removeInvalid(getNeighbours(current, visited))) {
-				//System.out.println("a*: " + t);
+				// System.out.println("a*: " + t);
 				if (!visited.contains(t)) {
-					
+
 					// sand and grass cost 1
 					if (!level.getGrid()[(int) t.x][(int) t.y].equals("=")) {
 						cost.put(t, cost.get(current) + 1);
 					} else if (level.getGrid()[(int) t.x][(int) t.y].equals("=")) {
 						cost.put(t, cost.get(current) + RIVER_COST);
 					}
-				
+
 					parent.put(t, current);
 					opened.add(t);
 				}
@@ -183,10 +185,10 @@ public class AStar {
 			// Remove those which are off the grid or collide with a wall
 			if (!wall.equals("w") && !wall.equals("x")) {
 				validNeighbours.add(p);
-				//System.out.println("adding " + p);
+				// System.out.println("adding " + p);
 			} else {
-				//System.out.println("w: " + !wall.equals("w"));
-				//System.out.println("x: " + !wall.equals("x"));
+				// System.out.println("w: " + !wall.equals("w"));
+				// System.out.println("x: " + !wall.equals("x"));
 			}
 		}
 		return validNeighbours;
@@ -199,7 +201,7 @@ public class AStar {
 	 *            The point to get neighbours of
 	 * @return The points which are directly adjacent to the point p
 	 */
-	
+
 	private ArrayList<Point.Double> getNeighbours(Point.Double p, List<Point.Double> visited) {
 		ArrayList<Point.Double> neighbours = new ArrayList<>();
 		Point.Double current;
@@ -209,11 +211,16 @@ public class AStar {
 			translation = translations.get(i);
 			// Key is x translation, Value is y translation
 			current = new Point.Double(p.x + translation.getKey(), p.y + translation.getValue());
-			val = level.getGrid()[(int)current.x][(int)current.y];
-			// yeah i dont get what this is
-			if (!val.equals("w") && !val.equals("x") && !visited.contains(current)) {
-				neighbours.add(current);
-				System.out.println(current);
+			try {
+				val = level.getGrid()[(int) current.x][(int) current.y];
+				// yeah i dont get what this is
+				if (!val.equals("w") && !val.equals("x") && !considered.contains(current)) {
+					neighbours.add(current);
+					considered.add(current);
+					//System.out.println(current);
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+
 			}
 		}
 		return neighbours;

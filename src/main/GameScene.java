@@ -98,7 +98,8 @@ public class GameScene extends Scene {
 			}
 		});
 		System.out.println("[*] added key press listeners");
-		
+		//render once before decision making
+		renderer.drawWorld(world, coords, zoomLevel, canvas);
 		new AnimationTimer() {
 	       public void handle(long currentNanoTime) {
 	    	   world.update();
