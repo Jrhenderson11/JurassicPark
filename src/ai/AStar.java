@@ -52,6 +52,7 @@ public class AStar {
 	private HashMap<Point.Double, Point.Double> parent;
 
 	private List<Point.Double> considered;
+	
 	// -----------
 	// Constructor
 	// -----------

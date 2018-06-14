@@ -24,12 +24,15 @@ public class Dinosaur extends Drawable {
 
 	private DIET diet;
 	private ACTIVITY activity;
+
+	private double hunger =0;
+	
 	private World world;
 	private List<Point.Double> path;
 	private int pathIndex;
 	
 	
-	private double speed = 1;
+	private double speed = 0.1;
 
 	public Dinosaur(String newName, Point.Double newPos, String spritePath, World brave, DIET foodType) {
 		this.name = newName;
@@ -59,17 +62,34 @@ public class Dinosaur extends Drawable {
 
 	public void update() {
 		if (activity == ACTIVITY.MOVING || activity == ACTIVITY.HUNTING_PLANT) {
-			for (int i = 0; i < speed; i++) {
-				if (!path.isEmpty() && pathIndex < path.size()) {
-			
-					Point.Double next = path.get(pathIndex);
-					//System.out.println("MOVING TO " + next.x + ", " + next.y);
-					
-					// TODO: smooth movement
+			if (!path.isEmpty() && pathIndex < path.size()) {
+		
+				Point.Double next = path.get(pathIndex);
+				//System.out.println("MOVING TO " + next.x + ", " + next.y);
+				
+				//snap to
+				if (next.distance(this.position)<speed) {
 					this.move(next);
-					path.remove(pathIndex);
-					pathIndex++;
+					path.remove(pathIndex++);
+					//System.out.println("next");
+				} else {
+					
+					//move X
+					if (next.x > position.x) {
+						this.move(speed, 0);
+					} else if (next.x < position.x) {
+						this.move(-speed, 0);
+					}
+					
+					//move Y
+					if (next.y > position.y) {
+						this.move(0, speed);
+					} else if (next.y < position.y) {
+						this.move(0, -speed);
+					}
+					//System.out.println("moving to point");
 				}
+				
 			}
 		} else if (activity == ACTIVITY.CHILLING) {
 			// TEST
@@ -99,7 +119,7 @@ public class Dinosaur extends Drawable {
 	}
 
 	private void move(double dX, double dY) {
-		this.position.setLocation(this.position.x + dX, this.position.y + dY);
+		this.position = new Point.Double(this.position.x + dX, this.position.y + dY);
 	}
 
 	private void move(Point.Double p) {

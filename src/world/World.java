@@ -1,5 +1,6 @@
 package world;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,26 +11,32 @@ public class World {
 
 	Map map;
 	List<Dinosaur> dinos;
-	
-	
+
 	public World() {
 		map = new Map();
 		dinos = new ArrayList<Dinosaur>();
-		dinos.add(new Testosaurus(this));
+		spawnDinos();
 	}
-	
-	
+
+	private void spawnDinos() {
+
+		int numDinos;
+		dinos.add(new Testosaurus(new Point.Double(50, 50), this));
+
+	}
+
 	public Map getMap() {
 		return map;
 	}
+
 	public List<Dinosaur> getDinos() {
 		return dinos;
 	}
-	
+
 	public void update() {
 		for (Dinosaur d : dinos) {
 			d.update();
 		}
 	}
-	
+
 }

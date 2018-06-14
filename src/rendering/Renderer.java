@@ -69,13 +69,7 @@ public class Renderer {
 				}
 			}
 		}
-		
-		for (Plant plant: map.getPlants()) {
-			
-		}
-
 	}
-
 	
 	
 	public void drawDrawable(Drawable d, Point coords, int zoomLevel, Canvas canvas) {
