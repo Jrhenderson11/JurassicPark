@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import world.dinosaurs.Dinosaur;
+import world.dinosaurs.Testosaurus;
 
 public class World {
 
@@ -14,6 +15,7 @@ public class World {
 	public World() {
 		map = new Map();
 		dinos = new ArrayList<Dinosaur>();
+		dinos.add(new Testosaurus(this));
 	}
 	
 	
@@ -22,6 +24,12 @@ public class World {
 	}
 	public List<Dinosaur> getDinos() {
 		return dinos;
+	}
+	
+	public void update() {
+		for (Dinosaur d : dinos) {
+			d.update();
+		}
 	}
 	
 }

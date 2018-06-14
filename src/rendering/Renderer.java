@@ -3,6 +3,7 @@ package rendering;
 import java.awt.Point;
 import java.util.HashMap;
 
+import interfaces.Drawable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -38,8 +39,12 @@ public class Renderer {
 		//clear screen
 		
 		drawMap(world.getMap(),coords,zoomLevel, canvas);
+		
+		for (Plant p:world.getMap().getPlants()) {
+			drawDrawable(p, coords, zoomLevel, canvas);
+		}
 		for (Dinosaur d:world.getDinos()) {
-			drawDinosaur(d, canvas);
+			drawDrawable(d, coords, zoomLevel, canvas);
 		}
 		
 	}
@@ -60,7 +65,7 @@ public class Renderer {
 					gc.fillRect(((iX - coords.x) * cell_width), ((iY - coords.y) * cell_height), Math.ceil(cell_width),
 							Math.ceil(cell_height));
 				} catch (Exception e) {
-					System.out.println("rendering went wrong");
+					//System.out.println("rendering went wrong");
 				}
 			}
 		}
@@ -71,9 +76,20 @@ public class Renderer {
 
 	}
 
-	public void drawDinosaur(Dinosaur d, Canvas canvas) {
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-		gc.drawImage(d.getSprite(), d.getPos().x , d.getPos().y);
+	
+	
+	public void drawDrawable(Drawable d, Point coords, int zoomLevel, Canvas canvas) {
+		//System.out.println("render dinosaur");
+		double cellWidth = canvas.getWidth() / zoomLevel;
+		double cellHeight = canvas.getHeight() / zoomLevel;
+
+		double imgWidth = d.getSprite().getWidth()/zoomLevel * 40;
+		double imgHeight = d.getSprite().getHeight()/zoomLevel * 40;
+		
+		if (d.getPos().x >coords.x && d.getPos().x <coords.x+zoomLevel && d.getPos().y >coords.y && d.getPos().y <coords.y+zoomLevel ) {
+			GraphicsContext gc = canvas.getGraphicsContext2D();
+			gc.drawImage(d.getSprite(), (d.getPos().x-coords.x)*cellWidth-(imgWidth/2) , (d.getPos().y-coords.y)*cellWidth-(imgHeight/2), imgWidth, imgHeight);
+		}
 	}
 }
 

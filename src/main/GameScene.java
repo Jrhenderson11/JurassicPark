@@ -101,7 +101,9 @@ public class GameScene extends Scene {
 		
 		new AnimationTimer() {
 	       public void handle(long currentNanoTime) {
+	    	   world.update();
 	    	   renderer.drawWorld(world, coords, zoomLevel, canvas);
+	    	   
 	       }
 	       	
 		}.start();

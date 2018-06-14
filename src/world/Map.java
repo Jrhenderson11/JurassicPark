@@ -1,9 +1,11 @@
 package world;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
 import landscapes.Original;
+import world.plants.Fern;
 import world.plants.Plant;
 
 public class Map {
@@ -15,6 +17,7 @@ public class Map {
 	public Map() {
 		generateNewMap("normal");
 		this.plants = new ArrayList<Plant>();
+		this.plants.add(new Fern(new Point.Double(250,50)));
 	}
 	
 	public void generateNewMap(String type) {
@@ -38,4 +41,8 @@ public class Map {
 		return this.grid.length;
 	}
 
+	public String getPos(Point.Double p) {
+		return grid[(int) p.x][(int) p.y];
+	}
+	
 }
