@@ -7,3 +7,11 @@ Requires my random map generation project (JMapper) as well to power the maps, I
 ## Contributions
 
 A* path finding code written by https://github.com/lucykgriffiths
+
+
+## TODO:
+
+ - add more dinosaurs
+ - enhance behaviours
+ - multiple key inputs
+ - plant spawning

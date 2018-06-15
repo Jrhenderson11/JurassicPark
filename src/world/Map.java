@@ -45,4 +45,8 @@ public class Map {
 		return grid[(int) p.x][(int) p.y];
 	}
 	
+	public String getPos(double x, double y) {
+		return grid[(int) x][(int) y];
+	}
+	
 }

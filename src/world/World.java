@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import utils.RandomUtils;
 import world.dinosaurs.Dinosaur;
 import world.dinosaurs.Testosaurus;
 
@@ -20,8 +21,23 @@ public class World {
 
 	private void spawnDinos() {
 
-		int numDinos;
-		dinos.add(new Testosaurus(new Point.Double(50, 50), this));
+		int numDinos = 1;
+		for (int i =0; i< numDinos;i++) {
+			
+			int x = RandomUtils.randomInt(300, 0);					
+			int y = RandomUtils.randomInt(300, 0);		
+			
+			while (map.getPos(x, y).equals("x")) {
+				x = RandomUtils.randomInt(300, 0);					
+				y = RandomUtils.randomInt(300, 0);		
+
+			}
+			dinos.add(new Testosaurus(new Point.Double(x, y), this));
+			System.out.println("Dinosaur spawned: " + new Point.Double(x, y));
+			
+			
+		}
+		
 
 	}
 
