@@ -27,14 +27,12 @@ public class World {
 			int x = RandomUtils.randomInt(300, 0);					
 			int y = RandomUtils.randomInt(300, 0);		
 			
-			while (map.getPos(x, y).equals("x")) {
+			while (map.getPos(x, y).equals("x") || map.getPos(x, y).equals("w")) {
 				x = RandomUtils.randomInt(300, 0);					
 				y = RandomUtils.randomInt(300, 0);		
-
 			}
 			dinos.add(new Triceratops(new Point.Double(x, y), this));
 			System.out.println("Dinosaur spawned: " + new Point.Double(x, y));
-			
 			
 		}
 		

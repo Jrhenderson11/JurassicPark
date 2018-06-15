@@ -6,6 +6,7 @@ import java.util.List;
 
 import ai.AStar;
 import ai.Translations;
+import heightmaps.generators.RandomUtils;
 import interfaces.Drawable;
 import javafx.scene.image.Image;
 import javafx.util.Pair;
@@ -32,8 +33,8 @@ public class Dinosaur extends Drawable {
 	private ACTIVITY activity;
 	private MOOD mood;
 
-	private final double MAXHUNGER = 200;
-	private final double MAXTHIRST = 200;
+	private double MAXHUNGER = 200;
+	private double MAXTHIRST = 200;
 	private double hunger = 0;
 	private double thirst = 0;
 
@@ -41,8 +42,15 @@ public class Dinosaur extends Drawable {
 	private List<Point.Double> path;
 	private int pathIndex;
 
-	private double speed = 0.1;
+	private double PURPOSEFUL_SPEED = 0.1;
+	private double LAZY_SPEED = 0.05;
+	
+	private double speed = LAZY_SPEED;
 
+	private int waitCounter=0;
+	private int waitTime;
+	
+	
 	public Dinosaur(String newName, Point.Double newPos, String spritePath, World brave, DIET foodType) {
 		this.name = newName;
 		this.position = newPos;
@@ -56,6 +64,7 @@ public class Dinosaur extends Drawable {
 		this.path = new ArrayList<Point.Double>();
 		this.activity = ACTIVITY.CHILLING;
 		this.diet = foodType;
+		this.mood = MOOD.CONTENT;
 
 	}
 
@@ -75,15 +84,42 @@ public class Dinosaur extends Drawable {
 		case CHILLING:
 			if (mood == MOOD.SAD) {
 				// sit still :(
-
+				
 			} else {
 				// move around a bit
+				if (path.isEmpty() || path == null || (position.equals(path.get(path.size()-1)))) {
+					//wait random amount 
+					if (waitCounter==0) {
+						this.waitTime = RandomUtils.randomGaussian(1000, 750);
+					}
+					System.out.println("CHILLING: " + waitCounter +" / "+ waitTime);
+					
+					
+					if (waitCounter++ == waitTime) {
+						//make new path
+						this.speed = LAZY_SPEED;
+						waitCounter=0;
+						
+						int dX = RandomUtils.randomInt(20, -20);
+						int dY = RandomUtils.randomInt(20, -20);
+						String terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
+						while (terrain.equals("x") || terrain.equals("w")) {
+							dX = RandomUtils.randomInt(20, -20);
+							dY = RandomUtils.randomInt(20, -20);
+							terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
+						}
+						path = (new AStar(this.position, new Point.Double(position.x+dX, position.y+dY), this.world.getMap()).getPath());
+					}
+					
+				} else {
 
+					proceedOnPath();
+				}
 			}
 
 			break;
 		case MOVING:
-			if (path.isEmpty()) {
+			if ((position.equals(path.get(path.size()-1)))) {
 				activity = ACTIVITY.CHILLING;
 			} else {
 				proceedOnPath();
@@ -91,7 +127,7 @@ public class Dinosaur extends Drawable {
 
 			break;
 		case HUNTING:
-			if (path.isEmpty()) {
+			if (path.isEmpty() || path == null || (position.equals(path.get(path.size()-1)))) {
 				activity = ACTIVITY.CHILLING;
 			} else {
 				proceedOnPath();
@@ -99,7 +135,7 @@ public class Dinosaur extends Drawable {
 
 			break;
 		case HUNTING_PLANT:
-			if (path.isEmpty()) {
+			if (position.equals(path.get(path.size()-1))) {
 				activity = ACTIVITY.CHILLING;
 			} else {
 				proceedOnPath();
@@ -129,6 +165,7 @@ public class Dinosaur extends Drawable {
 			// find and seek food
 			// trigger hunger, search for food, plot path and start moving
 			if (diet == DIET.HERBIVORE) {
+				this.speed = PURPOSEFUL_SPEED;
 				System.out.println("HUNTING PLANT");
 				this.activity = ACTIVITY.HUNTING_PLANT;
 				this.path = (new AStar(this.position, findNearestFood(), this.world.getMap()).getPath());
@@ -142,6 +179,7 @@ public class Dinosaur extends Drawable {
 
 			if (activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING) {
 				// find and seek water
+				this.speed = PURPOSEFUL_SPEED;
 				System.out.println("HUNTING WATER");
 				this.activity = ACTIVITY.HUNTING_WATER;
 				AStar astar = new AStar(this.position, findNearestFood(), this.world.getMap());
