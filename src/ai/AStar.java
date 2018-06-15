@@ -169,6 +169,64 @@ public class AStar {
 
 		return path;
 	}
+	
+	public Point.Double findNearestWater() {
+		this.considered = new ArrayList<>();
+		// quick test to see neither are unreachable
+		if (level.getPos(startPoint) == "x" || level.getPos(finishPoint) == "x") {
+			System.out.println("destination unreachable, stopping");
+		}
+		cost.put(startPoint, 0.0);
+
+		Queue<Point.Double> opened = new PriorityQueue<>(11, new Comparator<Point.Double>() {
+			@Override
+			public int compare(Point.Double p1, Point.Double p2) {
+				if (cost.get(p1) < cost.get(p2)) {
+					return -1;
+				} else if (cost.get(p1) > cost.get(p2)) {
+					return 1;
+				}
+				return 0;
+			}
+		});
+
+		Point.Double current = null;
+		ArrayList<Point.Double> visited = new ArrayList<Point.Double>();
+		opened.add(startPoint);
+
+		while (!opened.isEmpty()) {
+			current = opened.poll();
+			visited.add(current);
+			
+			//if at water finish
+			if (level.getPos(current).equals("=") || level.getPos(current).equals("w")) {
+				System.out.println("found water at " + current);
+				return current;
+			}
+
+			for (Point.Double t : removeInvalid(getNeighbours(current, visited))) {
+				// System.out.println("a*: " + t);
+				if (!visited.contains(t)) {
+
+					cost.put(t, cost.get(current) + 1);
+					parent.put(t, current);
+					opened.add(t);
+				}
+			}
+		}
+
+		Point.Double parentPoint = null;
+
+		try {
+			while (!(parentPoint = parent.get(current)).equals(startPoint)) {
+				current = parentPoint;
+			}
+		} catch (NullPointerException e) {
+			// just ignore it, it will probably be fine
+		}
+		//if no water return start position
+		return startPoint;
+	}
 
 	/**
 	 * Remove any points from the current points being considered that are invalid

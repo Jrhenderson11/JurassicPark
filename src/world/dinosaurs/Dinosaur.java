@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ai.AStar;
+import ai.Translations;
 import interfaces.Drawable;
 import javafx.scene.image.Image;
+import javafx.util.Pair;
 import world.World;
 import world.plants.Plant;
 
@@ -19,19 +21,26 @@ public class Dinosaur extends Drawable {
 	}
 
 	public enum ACTIVITY {
-		SLEEPING, CHILLING, EATING, DRINKING, HUNTING, HUNTING_PLANT, MOVING
+		SLEEPING, CHILLING, EATING, DRINKING, HUNTING, HUNTING_PLANT, HUNTING_WATER, MOVING
+	}
+
+	public enum MOOD {
+		HAPPY, EXCITED, CONTENT, SAD, RESTLESS, ANGRY
 	}
 
 	private DIET diet;
 	private ACTIVITY activity;
+	private MOOD mood;
 
-	private double hunger =0;
-	
+	private final double MAXHUNGER = 200;
+	private final double MAXTHIRST = 200;
+	private double hunger = 0;
+	private double thirst = 0;
+
 	private World world;
 	private List<Point.Double> path;
 	private int pathIndex;
-	
-	
+
 	private double speed = 0.1;
 
 	public Dinosaur(String newName, Point.Double newPos, String spritePath, World brave, DIET foodType) {
@@ -61,46 +70,160 @@ public class Dinosaur extends Drawable {
 	}
 
 	public void update() {
-		if (activity == ACTIVITY.MOVING || activity == ACTIVITY.HUNTING_PLANT) {
-			if (!path.isEmpty() && pathIndex < path.size()) {
-		
-				Point.Double next = path.get(pathIndex);
-				//System.out.println("MOVING TO " + next.x + ", " + next.y);
-				
-				//snap to
-				if (next.distance(this.position)<speed) {
-					this.move(next);
-					path.remove(pathIndex++);
-					//System.out.println("next");
-				} else {
-					
-					//move X
-					if (next.x > position.x) {
-						this.move(speed, 0);
-					} else if (next.x < position.x) {
-						this.move(-speed, 0);
-					}
-					
-					//move Y
-					if (next.y > position.y) {
-						this.move(0, speed);
-					} else if (next.y < position.y) {
-						this.move(0, -speed);
-					}
-					//System.out.println("moving to point");
-				}
-				
+		System.out.println("activity: " + activity);
+		switch (activity) {
+		case CHILLING:
+			if (mood == MOOD.SAD) {
+				// sit still :(
+
+			} else {
+				// move around a bit
+
 			}
-		} else if (activity == ACTIVITY.CHILLING) {
-			// TEST
+
+			break;
+		case MOVING:
+			if (path.isEmpty()) {
+				activity = ACTIVITY.CHILLING;
+			} else {
+				proceedOnPath();
+			}
+
+			break;
+		case HUNTING:
+			if (path.isEmpty()) {
+				activity = ACTIVITY.CHILLING;
+			} else {
+				proceedOnPath();
+			}
+
+			break;
+		case HUNTING_PLANT:
+			if (path.isEmpty()) {
+				activity = ACTIVITY.CHILLING;
+			} else {
+				proceedOnPath();
+			}
+
+			break;
+		case HUNTING_WATER:
+			if (position.equals(path.get(path.size()-1))) {
+				drink();
+			} else {
+				proceedOnPath();
+			}
+			break;
+		case DRINKING:
+			drink();
+			break;
+		case SLEEPING:
+			break;
+
+		default:
+			break;
+		}
+		// trigger hunger or thirst
+		// hunger += 0.1;
+
+		if (hunger == MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
+			// find and seek food
 			// trigger hunger, search for food, plot path and start moving
-			System.out.println("HUNTING PLANT");
-			this.activity = ACTIVITY.HUNTING_PLANT;
-			this.path = (new AStar(this.position, findNearestFood(), this.world.getMap()).getPath());
-			System.out.println("length: " + path.size());
-			pathIndex = 0;
+			if (diet == DIET.HERBIVORE) {
+				System.out.println("HUNTING PLANT");
+				this.activity = ACTIVITY.HUNTING_PLANT;
+				this.path = (new AStar(this.position, findNearestFood(), this.world.getMap()).getPath());
+				System.out.println("length: " + path.size());
+				pathIndex = 0;
+			}
+
 		}
 
+		if (thirst >= MAXTHIRST) {
+
+			if (activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING) {
+				// find and seek water
+				System.out.println("HUNTING WATER");
+				this.activity = ACTIVITY.HUNTING_WATER;
+				AStar astar = new AStar(this.position, findNearestFood(), this.world.getMap());
+				this.path = (new AStar(this.position, astar.findNearestWater(), this.world.getMap()).getPath());
+				System.out.println("length: " + path.size());
+				pathIndex = 0;
+			}
+		} else {
+			thirst += 0.1;
+			//System.out.println("thirst: " + thirst);
+
+		}
+
+	}
+
+	private void proceedOnPath() {
+		if (!path.isEmpty() && pathIndex < path.size()) {
+			Point.Double next = path.get(pathIndex);
+			// System.out.println("MOVING TO " + next.x + ", " + next.y);
+
+			// snap to
+			if (next.distance(this.position) < speed) {
+				this.move(next);
+				pathIndex++;
+				//path.remove();
+				// System.out.println("next");
+			} else {
+
+				// move X
+				if (next.x > position.x) {
+					this.move(speed, 0);
+				} else if (next.x < position.x) {
+					this.move(-speed, 0);
+				}
+
+				// move Y
+				if (next.y > position.y) {
+					this.move(0, speed);
+				} else if (next.y < position.y) {
+					this.move(0, -speed);
+				}
+				// System.out.println("moving to point");
+			}
+
+		}
+
+	}
+
+	private void drink() {
+		boolean water = false;
+		// check water here
+
+		if (world.getMap().getPos(position).equals("=") || world.getMap().getPos(position).equals("w")) {
+			water = true;
+		}
+		// check water nearby
+
+		Pair<Integer, Integer> translation;
+		Point.Double test;
+
+		for (int i = 0; i < 8; i++) {
+			translation = Translations.TRANSLATIONS_GRID.get(i);
+			test = new Point.Double(position.x + translation.getKey(), position.y + translation.getValue());
+			if (world.getMap().getPos(test).equals("=") || world.getMap().getPos(test).equals("w")) {
+				water = true;
+				break;
+			}
+		}
+		
+		if (water) {
+			activity = ACTIVITY.DRINKING;
+			System.out.println("SLURP");
+			
+			thirst -= MAXTHIRST/100;
+			if (thirst <= 0) {
+				this.activity=ACTIVITY.CHILLING;
+			}
+
+		} else {
+			System.out.println("no water found");
+			return;
+		}
 	}
 
 	public Point.Double findNearestFood() {
