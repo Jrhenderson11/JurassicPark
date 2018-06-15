@@ -1,6 +1,8 @@
 package main;
 
+import java.awt.List;
 import java.awt.Point;
+import java.util.LinkedList;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -48,61 +50,84 @@ public class GameScene extends Scene {
 		int width = grid[0].length;
 		int height = grid.length;
 
+		LinkedList<KeyCode> keysPressed = new LinkedList<KeyCode>();
+		
 		
 		setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent e) {
-				String code = e.getCode().toString();
-				if (e.getCode()==KeyCode.Z) { 
-					//filer.saveStringMap("files/map.txt", grid);
-				} else if (e.getCode()==KeyCode.SPACE) { 
-					//map = new Original(type);
-					//map.make();
-					//grid = map.getGrid();
+				KeyCode code = e.getCode();
+				if (!keysPressed.contains(code)) {
 					
-					//theStage.show();
-
-				} else if (e.getCode()==KeyCode.UP) {
-					if (zoomLevel > 4) {
-						zoomLevel-=ZOOMSPEED;
-					}
-					coords.translate(ZOOMSPEED/2, ZOOMSPEED/2);
-				} else if (e.getCode()==KeyCode.DOWN) {
-					if (zoomLevel < height-1) {
-						zoomLevel+=ZOOMSPEED;
-						coords.translate(-ZOOMSPEED/2, -ZOOMSPEED/2);
-						if (coords.y+zoomLevel > height) {
-							coords.translate(0, -ZOOMSPEED);
-						}
-						if (coords.x+zoomLevel > width) {
-							coords.translate(-ZOOMSPEED, 0);
-						}
-					}
-				} else if (e.getCode()==KeyCode.W) {
-					
-					if (coords.y > 0 ) {
-						coords.translate(0, -SPEED);
-					}
-				} else if (e.getCode()==KeyCode.S) {
-					if (coords.y+zoomLevel < height) {
-						coords.translate(0, SPEED);
-					}
-				} else if (e.getCode()==KeyCode.A) {
-					if (coords.x > 0 ) {
-						coords.translate(-SPEED, 0);
-					}
-				} else if (e.getCode()==KeyCode.D) {
-					if (coords.x+zoomLevel < width) {
-						coords.translate(SPEED, 0);
-					}
-				}
-				
+  					keysPressed.add(code);
+  				}
 			}
 		});
+		
+		setOnKeyReleased(new EventHandler<KeyEvent>() {
+			public void handle(KeyEvent e) {
+				keysPressed.remove(e.getCode());
+			}
+		});
+
 		System.out.println("[*] added key press listeners");
 		//render once before decision making
 		renderer.drawWorld(world, coords, zoomLevel, canvas);
 		new AnimationTimer() {
 	       public void handle(long currentNanoTime) {
+	    	   for (KeyCode code : keysPressed) {
+	    			if (code==KeyCode.Z) { 
+						//filer.saveStringMap("files/map.txt", grid);
+					} else if (code==KeyCode.SPACE) { 
+						//map = new Original(type);
+						//map.make();
+						//grid = map.getGrid();
+						
+						//theStage.show();
+
+					} else if (code==KeyCode.UP) {
+						if (zoomLevel > 4) {
+							zoomLevel-=ZOOMSPEED;
+						}
+						coords.translate(ZOOMSPEED/2, ZOOMSPEED/2);
+					} else if (code==KeyCode.DOWN) {
+						if (zoomLevel < height-1) {
+							zoomLevel+=ZOOMSPEED;
+							coords.translate(-ZOOMSPEED/2, -ZOOMSPEED/2);
+							if (coords.y+zoomLevel > height) {
+								coords.translate(0, -ZOOMSPEED);
+							}
+							if (coords.x+zoomLevel > width) {
+								coords.translate(-ZOOMSPEED, 0);
+							}
+							
+							if (coords.y< 0) {
+								coords.translate(0, ZOOMSPEED);
+							}
+							if (coords.x<0) {
+								coords.translate(ZOOMSPEED, 0);
+							}
+						}
+					} else if (code==KeyCode.W) {
+						
+						if (coords.y > 0 ) {
+							coords.translate(0, -SPEED);
+						}
+					} else if (code==KeyCode.S) {
+						if (coords.y+zoomLevel < height) {
+							coords.translate(0, SPEED);
+						}
+					} else if (code==KeyCode.A) {
+						if (coords.x > 0 ) {
+							coords.translate(-SPEED, 0);
+						}
+					} else if (code==KeyCode.D) {
+						if (coords.x+zoomLevel < width) {
+							coords.translate(SPEED, 0);
+						}
+					}
+
+	    	   }
+	    	   
 	    	   world.update();
 	    	   renderer.drawWorld(world, coords, zoomLevel, canvas);
 	    	   

@@ -13,6 +13,5 @@ A* path finding code written by https://github.com/lucykgriffiths
 
  - add more dinosaurs
  - enhance behaviours
- - multiple key inputs
  - plant spawning
  - astar in new thread
