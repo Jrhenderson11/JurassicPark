@@ -6,7 +6,7 @@ import java.util.List;
 
 import utils.RandomUtils;
 import world.dinosaurs.Dinosaur;
-import world.dinosaurs.Testosaurus;
+import world.dinosaurs.Triceratops;
 
 public class World {
 
@@ -32,7 +32,7 @@ public class World {
 				y = RandomUtils.randomInt(300, 0);		
 
 			}
-			dinos.add(new Testosaurus(new Point.Double(x, y), this));
+			dinos.add(new Triceratops(new Point.Double(x, y), this));
 			System.out.println("Dinosaur spawned: " + new Point.Double(x, y));
 			
 			

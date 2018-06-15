@@ -8,6 +8,7 @@ Requires my random map generation project (JMapper) as well to power the maps, I
 
 A* path finding code written by https://github.com/lucykgriffiths
 
+plant art from https://ansimuz.itch.io/trees-bushes-sprites
 
 ## TODO:
 
@@ -15,3 +16,8 @@ A* path finding code written by https://github.com/lucykgriffiths
  - enhance behaviours
  - plant spawning
  - astar in new thread
+ - randomize thirst / hunger amounts
+ - add nutrients to plants
+ - add animations to diosaurs
+ - add colour variations to dinosaurs
+ - improve map generation
