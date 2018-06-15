@@ -70,7 +70,7 @@ public class Dinosaur extends Drawable {
 	}
 
 	public void update() {
-		System.out.println("activity: " + activity);
+		//System.out.println("activity: " + activity);
 		switch (activity) {
 		case CHILLING:
 			if (mood == MOOD.SAD) {

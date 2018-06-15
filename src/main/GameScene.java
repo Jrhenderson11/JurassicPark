@@ -65,10 +65,11 @@ public class GameScene extends Scene {
 					if (zoomLevel > 4) {
 						zoomLevel-=ZOOMSPEED;
 					}
+					coords.translate(ZOOMSPEED/2, ZOOMSPEED/2);
 				} else if (e.getCode()==KeyCode.DOWN) {
 					if (zoomLevel < height-1) {
 						zoomLevel+=ZOOMSPEED;
-					
+						coords.translate(-ZOOMSPEED/2, -ZOOMSPEED/2);
 						if (coords.y+zoomLevel > height) {
 							coords.translate(0, -ZOOMSPEED);
 						}

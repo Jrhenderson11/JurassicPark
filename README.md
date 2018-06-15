@@ -15,3 +15,4 @@ A* path finding code written by https://github.com/lucykgriffiths
  - enhance behaviours
  - multiple key inputs
  - plant spawning
+ - astar in new thread
