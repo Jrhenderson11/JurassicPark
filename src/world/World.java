@@ -12,7 +12,8 @@ public class World {
 
 	Map map;
 	List<Dinosaur> dinos;
-
+	private boolean labels = false;
+	
 	public World() {
 		map = new Map();
 		dinos = new ArrayList<Dinosaur>();
@@ -53,4 +54,13 @@ public class World {
 		}
 	}
 
+	public boolean isLabels() {
+		return labels;
+	}
+
+	public void setLabels(boolean labels) {
+		this.labels = labels;
+	}
+
+	
 }

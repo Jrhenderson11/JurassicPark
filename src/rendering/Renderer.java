@@ -7,9 +7,13 @@ import interfaces.Drawable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import world.Map;
 import world.World;
 import world.dinosaurs.Dinosaur;
+import world.dinosaurs.Dinosaur.DIET;
 import world.plants.Plant;
 
 public class Renderer {
@@ -25,7 +29,7 @@ public class Renderer {
 	public Renderer() {
 		fillColourTable();
 	}
-	
+
 	public void fillColourTable() {
 		COLOUR_TABLE.put("^", DARK_GREEN);
 		COLOUR_TABLE.put("=", BLUE);
@@ -36,17 +40,20 @@ public class Renderer {
 	}
 
 	public void drawWorld(World world, Point coords, int zoomLevel, Canvas canvas) {
-		//clear screen
-		
-		drawMap(world.getMap(),coords,zoomLevel, canvas);
-		
-		for (Plant p:world.getMap().getPlants()) {
+		// clear screen
+
+		drawMap(world.getMap(), coords, zoomLevel, canvas);
+
+		for (Plant p : world.getMap().getPlants()) {
 			drawDrawable(p, coords, zoomLevel, canvas);
 		}
-		for (Dinosaur d:world.getDinos()) {
+		for (Dinosaur d : world.getDinos()) {
 			drawDrawable(d, coords, zoomLevel, canvas);
+			if (world.isLabels()) {
+				drawLabel(d, coords, zoomLevel, canvas);
+			}
 		}
-		
+
 	}
 
 	private void drawMap(Map map, Point coords, int zoomLevel, Canvas canvas) {
@@ -65,25 +72,64 @@ public class Renderer {
 					gc.fillRect(((iX - coords.x) * cell_width), ((iY - coords.y) * cell_height), Math.ceil(cell_width),
 							Math.ceil(cell_height));
 				} catch (Exception e) {
-					//System.out.println("rendering went wrong");
+					// System.out.println("rendering went wrong");
 				}
 			}
 		}
 	}
-	
-	
+
 	public void drawDrawable(Drawable d, Point coords, int zoomLevel, Canvas canvas) {
-		//System.out.println("render dinosaur");
+		// System.out.println("render dinosaur");
 		double cellWidth = canvas.getWidth() / zoomLevel;
 		double cellHeight = canvas.getHeight() / zoomLevel;
 
-		double imgWidth = d.getSprite().getWidth()/zoomLevel * 40;
-		double imgHeight = d.getSprite().getHeight()/zoomLevel * 40;
+		double imgWidth = d.getSprite().getWidth() / zoomLevel * 40;
+		double imgHeight = d.getSprite().getHeight() / zoomLevel * 40;
 		
-		if (d.getPos().x >coords.x && d.getPos().x <coords.x+zoomLevel && d.getPos().y >coords.y && d.getPos().y <coords.y+zoomLevel ) {
+		if (d.getPos().x > coords.x && d.getPos().x < coords.x + zoomLevel && d.getPos().y > coords.y
+				&& d.getPos().y < coords.y + zoomLevel) {
 			GraphicsContext gc = canvas.getGraphicsContext2D();
-			gc.drawImage(d.getSprite(), (d.getPos().x-coords.x)*cellWidth-(imgWidth/2) , (d.getPos().y-coords.y)*cellWidth-(imgHeight/2), imgWidth, imgHeight);
+			if (d.getDirection()==1) {
+				gc.drawImage(d.getSprite(), (d.getPos().x - coords.x) * cellWidth - (imgWidth / 2),
+						(d.getPos().y - coords.y) * cellHeight - (imgHeight / 2), imgWidth, imgHeight);
+				
+			} else if (d.getDirection()==-1){
+				gc.drawImage(d.getSprite(), (d.getPos().x - coords.x) * cellWidth + (imgWidth / 2),
+						(d.getPos().y - coords.y) * cellHeight - (imgHeight / 2), -imgWidth, imgHeight);
+				
+			}
+		}
+	}
+
+	public void drawLabel(Dinosaur d, Point coords, int zoomLevel, Canvas canvas) {
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+
+		if (d.getPos().x > coords.x && d.getPos().x < coords.x + zoomLevel && d.getPos().y > coords.y
+				&& d.getPos().y < coords.y + zoomLevel) {
+			double cellWidth = canvas.getWidth() / zoomLevel;
+			double cellHeight = canvas.getHeight() / zoomLevel;
+			double imgWidth = d.getSprite().getWidth() / zoomLevel * 40;
+			double imgHeight = d.getSprite().getHeight() / zoomLevel * 40;
+			
+			Point.Double dinoPos = new Point.Double((d.getPos().x - coords.x) * cellWidth,
+					(d.getPos().y - coords.y) * cellHeight);
+			gc.setTextAlign(TextAlignment.CENTER);
+			
+			gc.setFill(Color.RED);
+			
+			//name
+			gc.setFont(Font.font("Nimbus Mono L", FontWeight.BOLD, 12));
+			gc.fillText(d.getName(),dinoPos.x, dinoPos.y - (imgHeight/2 + (13*3)));
+			
+			//activity
+			gc.setFont(Font.font("Nimbus Mono L", FontWeight.NORMAL, 12));
+			gc.setFill(Color.RED);
+			gc.fillText(d.getActivity().toString(),dinoPos.x, dinoPos.y - (imgHeight/2 + (13*2)));
+		
+			//mood
+			gc.setFont(Font.font("Nimbus Mono L", FontWeight.NORMAL, 12));
+			gc.setFill(Color.RED);
+			gc.fillText(d.getMood().toString(),dinoPos.x, dinoPos.y - (imgHeight/2 + (13*1)));
 		}
 	}
 }
-

@@ -50,7 +50,6 @@ public class Dinosaur extends Drawable {
 	private int waitCounter=0;
 	private int waitTime;
 	
-	
 	public Dinosaur(String newName, Point.Double newPos, String spritePath, World brave, DIET foodType) {
 		this.name = newName;
 		this.position = newPos;
@@ -90,9 +89,13 @@ public class Dinosaur extends Drawable {
 				if (path.isEmpty() || path == null || (position.equals(path.get(path.size()-1)))) {
 					//wait random amount 
 					if (waitCounter==0) {
-						this.waitTime = RandomUtils.randomGaussian(1000, 750);
+						if (mood == MOOD.CONTENT) {
+							this.waitTime = RandomUtils.randomGaussian(1000, 750);
+						} else {
+							this.waitTime = RandomUtils.randomInt(600, 0);
+						}
 					}
-					System.out.println("CHILLING: " + waitCounter +" / "+ waitTime);
+					//System.out.println("CHILLING: " + waitCounter +" / "+ waitTime);
 					
 					
 					if (waitCounter++ == waitTime) {
@@ -281,10 +284,84 @@ public class Dinosaur extends Drawable {
 
 	private void move(double dX, double dY) {
 		this.position = new Point.Double(this.position.x + dX, this.position.y + dY);
+		if (dX < 0) {
+			this.direction = -1;
+		} else if (dX>0) {
+			this.direction = 1;		
+		}
 	}
 
 	private void move(Point.Double p) {
 		this.position = p;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public ACTIVITY getActivity() {
+		return activity;
+	}
+
+	public void setActivity(ACTIVITY activity) {
+		this.activity = activity;
+	}
+
+	public MOOD getMood() {
+		return mood;
+	}
+
+	public void setMood(MOOD mood) {
+		this.mood = mood;
+	}
+
+	public double getHunger() {
+		return hunger;
+	}
+
+	public void setHunger(double hunger) {
+		this.hunger = hunger;
+	}
+
+	public double getThirst() {
+		return thirst;
+	}
+
+	public void setThirst(double thirst) {
+		this.thirst = thirst;
+	}
+
+	public double getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(double speed) {
+		this.speed = speed;
+	}
+
+	public int getWaitCounter() {
+		return waitCounter;
+	}
+
+	public void setWaitCounter(int waitCounter) {
+		this.waitCounter = waitCounter;
+	}
+
+	public int getWaitTime() {
+		return waitTime;
+	}
+
+	public void setWaitTime(int waitTime) {
+		this.waitTime = waitTime;
+	}
+
+	public DIET getDiet() {
+		return diet;
+	}
+
 
 }

@@ -124,6 +124,9 @@ public class GameScene extends Scene {
 						if (coords.x+zoomLevel < width) {
 							coords.translate(SPEED, 0);
 						}
+					} else if (code==KeyCode.T) {
+						
+						world.setLabels(true);
 					}
 
 	    	   }
