@@ -1,6 +1,8 @@
 # JurassicPark
 A Dinosaur game!
 
+![alt text](https://github.com/Jrhenderson11/JurassicPark/blob/master/pics/Selection_119.png "Triceratops on an island, dirnking from a river")
+
 
 Requires my random map generation project (JMapper) as well to power the maps, I'm planning to make it so u can just comment that out and only use prebuilt maps
 
