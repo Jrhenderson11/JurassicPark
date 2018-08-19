@@ -10,6 +10,7 @@ import heightmaps.generators.RandomUtils;
 import interfaces.Drawable;
 import javafx.scene.image.Image;
 import javafx.util.Pair;
+import version2.Terrain.Biome;
 import world.World;
 import world.plants.Plant;
 
@@ -105,7 +106,7 @@ public class Dinosaur extends Drawable {
 						
 						int dX = RandomUtils.randomInt(20, -20);
 						int dY = RandomUtils.randomInt(20, -20);
-						String terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
+						Biome terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
 						while (terrain.equals("x") || terrain.equals("w")) {
 							dX = RandomUtils.randomInt(20, -20);
 							dY = RandomUtils.randomInt(20, -20);

@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.List;
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -15,6 +14,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import rendering.Renderer;
 import rendering.SystemSettings;
+import version2.Terrain;
 import world.World;
 
 public class GameScene extends Scene {
@@ -31,9 +31,7 @@ public class GameScene extends Scene {
 	
 	public GameScene(Group root, Stage primaryStage) {
 		super(root);
-		
 
-		
 		this.displayWidth = SystemSettings.getScreenWidth();
         this.displayHeight = SystemSettings.getScreenHeight();
         Canvas canvas = new Canvas(displayWidth, displayHeight);
@@ -46,18 +44,15 @@ public class GameScene extends Scene {
 
 		this.zoomLevel = world.getMap().getWidth();
 		
-		String[][] grid = world.getMap().getGrid();
-		int width = grid[0].length;
-		int height = grid.length;
+		Terrain terrain = world.getMap().getTerrain();
+		int width = terrain.getSize(), height = terrain.getSize();
 
 		LinkedList<KeyCode> keysPressed = new LinkedList<KeyCode>();
-		
-		
+	
 		setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent e) {
 				KeyCode code = e.getCode();
 				if (!keysPressed.contains(code)) {
-					
   					keysPressed.add(code);
   				}
 			}
@@ -66,6 +61,17 @@ public class GameScene extends Scene {
 		setOnKeyReleased(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent e) {
 				keysPressed.remove(e.getCode());
+				
+				if (e.getCode()==KeyCode.T) {
+					if (world.isLabels()) {
+						world.setLabels(false);
+					} else {
+						world.setLabels(true);
+					}
+					
+				} else if (e.getCode()==KeyCode.M) {
+					renderer.switchMode();
+				}
 			}
 		});
 
@@ -99,7 +105,6 @@ public class GameScene extends Scene {
 							if (coords.x+zoomLevel > width) {
 								coords.translate(-ZOOMSPEED, 0);
 							}
-							
 							if (coords.y< 0) {
 								coords.translate(0, ZOOMSPEED);
 							}
@@ -126,7 +131,7 @@ public class GameScene extends Scene {
 						}
 					} else if (code==KeyCode.T) {
 						
-						world.setLabels(true);
+		
 					}
 
 	    	   }

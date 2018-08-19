@@ -11,6 +11,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 import javafx.util.Pair;
+import version2.Terrain.Biome;
 import world.Map;
 
 public class AStar {
@@ -52,7 +53,7 @@ public class AStar {
 	private HashMap<Point.Double, Point.Double> parent;
 
 	private List<Point.Double> considered;
-	
+
 	// -----------
 	// Constructor
 	// -----------
@@ -106,7 +107,8 @@ public class AStar {
 		this.considered = new ArrayList<>();
 		List<Point.Double> path = new LinkedList<>();
 		// quick test to see neither are unreachable
-		if (level.getPos(startPoint) == "x" || level.getPos(finishPoint) == "x") {
+		if (level.getPosElev(startPoint) > 0.6 || level.getPosElev(finishPoint) > 0.6
+				|| level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
 			System.out.println("destination unreachable, stopping");
 			return path;
 		}
@@ -141,9 +143,9 @@ public class AStar {
 				if (!visited.contains(t)) {
 
 					// sand and grass cost 1
-					if (!level.getGrid()[(int) t.x][(int) t.y].equals("=")) {
+					if (!level.getTerrain().getBiomeLayer()[(int) t.x][(int) t.y].equals(Biome.WATER)) {
 						cost.put(t, cost.get(current) + 1);
-					} else if (level.getGrid()[(int) t.x][(int) t.y].equals("=")) {
+					} else if (level.getTerrain().getBiomeLayer()[(int) t.x][(int) t.y].equals(Biome.WATER)) {
 						cost.put(t, cost.get(current) + RIVER_COST);
 					}
 
@@ -169,11 +171,12 @@ public class AStar {
 
 		return path;
 	}
-	
+
 	public Point.Double findNearestWater() {
 		this.considered = new ArrayList<>();
 		// quick test to see neither are unreachable
-		if (level.getPos(startPoint) == "x" || level.getPos(finishPoint) == "x") {
+		if (level.getPos(startPoint) == Biome.BARE || level.getPos(finishPoint) == Biome.BARE
+				|| level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
 			System.out.println("destination unreachable, stopping");
 		}
 		cost.put(startPoint, 0.0);
@@ -197,9 +200,9 @@ public class AStar {
 		while (!opened.isEmpty()) {
 			current = opened.poll();
 			visited.add(current);
-			
-			//if at water finish
-			if (level.getPos(current).equals("=") || level.getPos(current).equals("w")) {
+
+			// if at water finish
+			if (level.getPos(current) == Biome.SEA || level.getPos(current) == Biome.WATER) {
 				System.out.println("found water at " + current);
 				return current;
 			}
@@ -224,7 +227,7 @@ public class AStar {
 		} catch (NullPointerException e) {
 			// just ignore it, it will probably be fine
 		}
-		//if no water return start position
+		// if no water return start position
 		return startPoint;
 	}
 
@@ -238,16 +241,14 @@ public class AStar {
 	 */
 	private ArrayList<Point.Double> removeInvalid(ArrayList<Point.Double> neighbours) {
 		ArrayList<Point.Double> validNeighbours = new ArrayList<>();
-		String wall;
+		Biome wall;
 		for (Point.Double p : neighbours) {
-			wall = level.getGrid()[(int) p.x][(int) p.y];
+			wall = level.getTerrain().getBiomeLayer()[(int) p.x][(int) p.y];
 			// Remove those which are off the grid or collide with a wall
-			if (!wall.equals("w") && !wall.equals("x")) {
+			if (!(wall == Biome.SEA) && !(level.getTerrain().getElevation()[(int) p.x][(int) p.y] > 0.6)) {
 				validNeighbours.add(p);
 				// System.out.println("adding " + p);
 			} else {
-				// System.out.println("w: " + !wall.equals("w"));
-				// System.out.println("x: " + !wall.equals("x"));
 			}
 		}
 		return validNeighbours;
@@ -264,19 +265,20 @@ public class AStar {
 	private ArrayList<Point.Double> getNeighbours(Point.Double p, List<Point.Double> visited) {
 		ArrayList<Point.Double> neighbours = new ArrayList<>();
 		Point.Double current;
-		String val;
+		Biome val;
 		Pair<Integer, Integer> translation;
 		for (int i = 0; i < 8; i++) {
 			translation = translations.get(i);
 			// Key is x translation, Value is y translation
 			current = new Point.Double(p.x + translation.getKey(), p.y + translation.getValue());
 			try {
-				val = level.getGrid()[(int) current.x][(int) current.y];
+				val = level.getTerrain().getBiomeLayer()[(int) current.x][(int) current.y];
 				// yeah i dont get what this is
-				if (!val.equals("w") && !val.equals("x") && !considered.contains(current)) {
+				if (!(val == Biome.SEA) && !(level.getTerrain().getElevation()[(int) current.x][(int) current.y] > 0.6)
+						&& !considered.contains(current)) {
 					neighbours.add(current);
 					considered.add(current);
-					//System.out.println(current);
+					// System.out.println(current);
 				}
 			} catch (ArrayIndexOutOfBoundsException e) {
 
