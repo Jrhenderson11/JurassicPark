@@ -30,6 +30,8 @@ public class SimpleTest extends BasicGame {
 
 	private Input input;
 
+	private boolean started = false;
+	
 	public SimpleTest() {
 		super("Jurassic Park");
 	}
@@ -40,6 +42,7 @@ public class SimpleTest extends BasicGame {
 		renderer = new Renderer();
 		world = new World();
 		world.setLabels(true);
+		
 		System.out.println("[*] made world");
 		this.zoomLevel = world.getMap().getWidth();
 
@@ -48,7 +51,7 @@ public class SimpleTest extends BasicGame {
 		height = terrain.getSize();
 
 		LinkedList<KeyCode> keysPressed = new LinkedList<KeyCode>();
-
+		
 	}
 
 	@Override
@@ -131,6 +134,10 @@ public class SimpleTest extends BasicGame {
 
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
+		if (!started) {
+			renderer.initiateMap(world.getMap(), coords, zoomLevel, container, g);
+			started = true;
+		}
 		renderer.drawWorldSlick(world, coords, zoomLevel, container, g);
 		// g.drawString("Hello, Slick world!", 0, 300);
 	}

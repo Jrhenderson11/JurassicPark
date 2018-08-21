@@ -8,6 +8,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 
 import drawer.Gradient;
@@ -52,6 +53,8 @@ public class Renderer {
 
 	private static HashMap<Biome, Color> BIOME_COLOUR_TABLE = new HashMap<Biome, Color>();
 
+	private Image background = null;
+
 	public Renderer() {
 		fillColourTable();
 	}
@@ -81,6 +84,44 @@ public class Renderer {
 		for (Biome b : BIOME_COLOUR_TABLE.keySet()) {
 			Color c = BIOME_COLOUR_TABLE.get(b);
 			BIOME_COLOUR_TABLE.put(b, new Color(c.r / 255, c.g / 255, c.b / 255));
+		}
+
+	}
+
+	public void initiateMap(Map map, Point coords, int zoomLevel, GameContainer container, Graphics g) {
+		float cell_width = container.getWidth() / (float) zoomLevel;
+		float cell_height = container.getHeight() / (float) zoomLevel;
+
+		// draw & fill
+		Terrain terrain = map.getTerrain();
+
+		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
+			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
+				try {
+					g.setColor(BIOME_COLOUR_TABLE.get(terrain.getBiomeLayer()[iX][iY]));
+
+					float x = (float) ((iX - coords.x) * cell_width);
+					float y = (float) ((iY - coords.y) * cell_height);
+					float width = (float) (cell_width);
+					float height = (float) (cell_height);
+					Rectangle rect = new Rectangle(x, y, width, height);
+
+					// g.draw(rect);
+					g.fill(rect);
+				} catch (Exception e) {
+					// System.out.println("rendering went wrong");
+				}
+			}
+		}
+		// Image background = null;
+		try {
+			System.out.println("width: " + map.getWidth());
+			background = new Image(container.getWidth(), container.getHeight());
+			g.copyArea(background, 0, 0);
+			g.flush();
+
+		} catch (SlickException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -157,27 +198,30 @@ public class Renderer {
 		float cell_width = container.getWidth() / (float) zoomLevel;
 		float cell_height = container.getHeight() / (float) zoomLevel;
 
-		// draw & fill
-		Terrain terrain = map.getTerrain();
-
-		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
-			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
-				try {
-					g.setColor(BIOME_COLOUR_TABLE.get(terrain.getBiomeLayer()[iX][iY]));
-
-					float x = (float) ((iX - coords.x) * cell_width);
-					float y = (float) ((iY - coords.y) * cell_height);
-					float width = (float) (cell_width);
-					float height = (float) (cell_height);
-					Rectangle rect = new Rectangle(x, y, width, height);
-
-					// g.draw(rect);
-					g.fill(rect);
-				} catch (Exception e) {
-					// System.out.println("rendering went wrong");
-				}
-			}
-		}
+		Image scaledBackground = background.getScaledCopy(((float) map.getWidth()/(float) zoomLevel));
+		g.drawImage(scaledBackground, ((float) 0-(coords.x*cell_width)), ((float) 0-(coords.y*cell_height)));
+//
+//		// draw & fill
+//		Terrain terrain = map.getTerrain();
+//
+//		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
+//			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
+//				try {
+//					g.setColor(BIOME_COLOUR_TABLE.get(terrain.getBiomeLayer()[iX][iY]));
+//
+//					float x = (float) ((iX - coords.x) * cell_width);
+//					float y = (float) ((iY - coords.y) * cell_height);
+//					float width = (float) (cell_width);
+//					float height = (float) (cell_height);
+//					Rectangle rect = new Rectangle(x, y, width, height);
+//
+//					// g.draw(rect);
+//					g.fill(rect);
+//				} catch (Exception e) {
+//					// System.out.println("rendering went wrong");
+//				}
+//			}
+//		}
 	}
 
 	private void drawHeightMap(double[][] map, Point coords, int zoomLevel, Canvas canvas) {
@@ -265,19 +309,18 @@ public class Renderer {
 		float cellWidth = container.getWidth() / (float) zoomLevel;
 		float cellHeight = container.getHeight() / (float) zoomLevel;
 
-
 		Image sprite = d.getSprite().getScaledCopy((1 / ((float) zoomLevel)) * 40);
-		float imgWidth = (float) sprite.getWidth() /(float) zoomLevel * 40;
-		float imgHeight = (float) sprite.getHeight() /(float) zoomLevel * 40;
-		
+		float imgWidth = (float) sprite.getWidth() / (float) zoomLevel * 40;
+		float imgHeight = (float) sprite.getHeight() / (float) zoomLevel * 40;
+
 		if (d.getPos().x > coords.x && d.getPos().x < coords.x + zoomLevel && d.getPos().y > coords.y
 				&& d.getPos().y < coords.y + zoomLevel) {
 			if (d.getDirection() == 1) {
 			} else if (d.getDirection() == -1) {
 				sprite = sprite.getFlippedCopy(true, false);
 			}
-			//System.out.println("imgwidth: " + imgWidth);
-			float x = (float) (((d.getPos().x - coords.x) * cellWidth) - (imgWidth /2));
+			// System.out.println("imgwidth: " + imgWidth);
+			float x = (float) (((d.getPos().x - coords.x) * cellWidth) - (imgWidth / 2));
 			float y = (float) (((d.getPos().y - coords.y) * cellHeight) - (imgHeight / 2));
 			g.drawImage(sprite, x, y);
 
@@ -291,8 +334,8 @@ public class Renderer {
 			float cellWidth = container.getWidth() / (float) zoomLevel;
 			float cellHeight = container.getHeight() / (float) zoomLevel;
 			Image sprite = d.getSprite().getScaledCopy((1 / ((float) zoomLevel)) * 40);
-			float imgWidth = (float) sprite.getWidth() /(float) zoomLevel * 40;
-			float imgHeight = (float) sprite.getHeight() /(float) zoomLevel * 40;
+			float imgWidth = (float) sprite.getWidth() / (float) zoomLevel * 40;
+			float imgHeight = (float) sprite.getHeight() / (float) zoomLevel * 40;
 
 			Point.Double dinoPos = new Point.Double((d.getPos().x - coords.x) * cellWidth,
 					(d.getPos().y - coords.y) * cellHeight);
