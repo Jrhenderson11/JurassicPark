@@ -98,7 +98,6 @@ public class Dinosaur extends Drawable {
 					}
 					//System.out.println("CHILLING: " + waitCounter +" / "+ waitTime);
 					
-					
 					if (waitCounter++ == waitTime) {
 						//make new path
 						this.speed = LAZY_SPEED;
@@ -107,16 +106,15 @@ public class Dinosaur extends Drawable {
 						int dX = RandomUtils.randomInt(20, -20);
 						int dY = RandomUtils.randomInt(20, -20);
 						Biome terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
-						while (terrain.equals("x") || terrain.equals("w")) {
+						//check in / out of bounds
+						while (world.getMap().getPosElev(new Point.Double(position.x+dX, position.y+dY)) > 0.7 || terrain == Biome.SEA) {
 							dX = RandomUtils.randomInt(20, -20);
 							dY = RandomUtils.randomInt(20, -20);
 							terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
 						}
 						path = (new AStar(this.position, new Point.Double(position.x+dX, position.y+dY), this.world.getMap()).getPath());
 					}
-					
 				} else {
-
 					proceedOnPath();
 				}
 			}
@@ -140,11 +138,10 @@ public class Dinosaur extends Drawable {
 			break;
 		case HUNTING_PLANT:
 			if (position.equals(path.get(path.size()-1))) {
-				activity = ACTIVITY.CHILLING;
+				eat();
 			} else {
 				proceedOnPath();
 			}
-
 			break;
 		case HUNTING_WATER:
 			if (position.equals(path.get(path.size()-1))) {
@@ -156,23 +153,28 @@ public class Dinosaur extends Drawable {
 		case DRINKING:
 			drink();
 			break;
+		case EATING:
+			eat();
+			break;
 		case SLEEPING:
 			break;
 
 		default:
 			break;
 		}
-		// trigger hunger or thirst
-		// hunger += 0.1;
 
-		if (hunger == MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
+		// trigger hunger or thirst
+		hunger += 0.1;
+
+		if (hunger >= MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
 			// find and seek food
 			// trigger hunger, search for food, plot path and start moving
 			if (diet == DIET.HERBIVORE) {
 				this.speed = PURPOSEFUL_SPEED;
 				System.out.println("HUNTING PLANT");
 				this.activity = ACTIVITY.HUNTING_PLANT;
-				this.path = (new AStar(this.position, findNearestFood(), this.world.getMap()).getPath());
+				
+				this.path = (new AStar(new Point.Double((int)this.position.getX(), (int) this.position.getY()), findNearestFood(), this.world.getMap()).getPath());
 				System.out.println("length: " + path.size());
 				pathIndex = 0;
 			}
@@ -180,7 +182,6 @@ public class Dinosaur extends Drawable {
 		}
 
 		if (thirst >= MAXTHIRST) {
-
 			if (activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING) {
 				// find and seek water
 				this.speed = PURPOSEFUL_SPEED;
@@ -192,9 +193,8 @@ public class Dinosaur extends Drawable {
 				pathIndex = 0;
 			}
 		} else {
-			thirst += 0.1;
+			//thirst += 0.1;
 			//System.out.println("thirst: " + thirst);
-
 		}
 
 	}
@@ -236,7 +236,7 @@ public class Dinosaur extends Drawable {
 		boolean water = false;
 		// check water here
 
-		if (world.getMap().getPos(position).equals("=") || world.getMap().getPos(position).equals("w")) {
+		if (world.getMap().getPos(position) == Biome.WATER || world.getMap().getPos(position)== Biome.SHALLOW_SEA) {
 			water = true;
 		}
 		// check water nearby
@@ -247,7 +247,7 @@ public class Dinosaur extends Drawable {
 		for (int i = 0; i < 8; i++) {
 			translation = Translations.TRANSLATIONS_GRID.get(i);
 			test = new Point.Double(position.x + translation.getKey(), position.y + translation.getValue());
-			if (world.getMap().getPos(test).equals("=") || world.getMap().getPos(test).equals("w")) {
+			if (world.getMap().getPos(test)==Biome.WATER || world.getMap().getPos(test)==Biome.SHALLOW_SEA) {
 				water = true;
 				break;
 			}
@@ -267,6 +267,41 @@ public class Dinosaur extends Drawable {
 			return;
 		}
 	}
+	
+	private void eat() {
+		boolean food = false;
+		// check water here
+
+		if (findNearestFood().distance(this.position)<1) {
+			food = true;
+		}
+
+		Pair<Integer, Integer> translation;
+		Point.Double test;
+
+		for (int i = 0; i < 8; i++) {
+			translation = Translations.TRANSLATIONS_GRID.get(i);
+			test = new Point.Double(position.x + translation.getKey(), position.y + translation.getValue());
+			if (findNearestFood().distance(this.position)<1) {
+				food = true;
+				break;
+			}
+		}
+		
+		if (food) {
+			activity = ACTIVITY.EATING;
+			System.out.println("CHOMP");
+			
+			hunger -= MAXHUNGER/100;
+			if (hunger <= 0) {
+				this.activity=ACTIVITY.CHILLING;
+			}
+
+		} else {
+			System.out.println("no food found :(");
+			return;
+		}
+	}
 
 	public Point.Double findNearestFood() {
 		Point.Double foodPos = null;
@@ -275,6 +310,8 @@ public class Dinosaur extends Drawable {
 			double dist = Integer.MAX_VALUE;
 			for (Plant p : world.getMap().getPlants()) {
 				if (p.getPos().distance(this.position) < dist) {
+					//System.out.println(p.getPos() + ": " + dist);
+					dist = p.getPos().distance(this.position);
 					foodPos = p.getPos();
 				}
 			}
@@ -363,6 +400,5 @@ public class Dinosaur extends Drawable {
 	public DIET getDiet() {
 		return diet;
 	}
-
 
 }

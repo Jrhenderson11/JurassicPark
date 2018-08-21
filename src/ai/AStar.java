@@ -71,7 +71,7 @@ public class AStar {
 	 *            contains the HashMap
 	 */
 	public AStar(Point.Double startPoint, Point.Double finishPoint, Map level) {
-		System.out.println("ASTAR to " + finishPoint);
+		System.out.println("ASTAR to " + finishPoint + " from " + startPoint);
 		this.startPoint = startPoint;
 		this.finishPoint = finishPoint;
 		this.level = level;
@@ -104,6 +104,7 @@ public class AStar {
 	 *         to the finishing point
 	 */
 	public List<Point.Double> getPath() {
+		System.out.println("getting path");
 		this.considered = new ArrayList<>();
 		List<Point.Double> path = new LinkedList<>();
 		// quick test to see neither are unreachable
@@ -168,14 +169,14 @@ public class AStar {
 		}
 		path.add(current);
 		Collections.reverse(path);
-
+		System.out.println("done");
 		return path;
 	}
 
 	public Point.Double findNearestWater() {
 		this.considered = new ArrayList<>();
 		// quick test to see neither are unreachable
-		if (level.getPos(startPoint) == Biome.BARE || level.getPos(finishPoint) == Biome.BARE
+		if (level.getPosElev(startPoint) > 0.6 || level.getPosElev(finishPoint) > 0.6
 				|| level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
 			System.out.println("destination unreachable, stopping");
 		}
@@ -202,7 +203,7 @@ public class AStar {
 			visited.add(current);
 
 			// if at water finish
-			if (level.getPos(current) == Biome.SEA || level.getPos(current) == Biome.WATER) {
+			if (level.getPos(current) == Biome.SHALLOW_SEA || level.getPos(current) == Biome.WATER) {
 				System.out.println("found water at " + current);
 				return current;
 			}

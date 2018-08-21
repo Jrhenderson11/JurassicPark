@@ -95,6 +95,10 @@ public class GameScene extends Scene {
 							zoomLevel-=ZOOMSPEED;
 						}
 						coords.translate(ZOOMSPEED/2, ZOOMSPEED/2);
+						if (zoomLevel < 50) {
+							SPEED=1;
+						}
+
 					} else if (code==KeyCode.DOWN) {
 						if (zoomLevel < height-1) {
 							zoomLevel+=ZOOMSPEED;
@@ -111,6 +115,10 @@ public class GameScene extends Scene {
 							if (coords.x<0) {
 								coords.translate(ZOOMSPEED, 0);
 							}
+						}
+						
+						if (zoomLevel >= 50) {
+							SPEED=4;
 						}
 					} else if (code==KeyCode.W) {
 						

@@ -28,6 +28,7 @@ public class Renderer {
 	private Mode mode = Mode.TERRAIN;
 
 	private static Color SAND = Color.rgb(244, 209, 66);
+	private static Color DARK_SAND = Color.rgb(221, 186, 39);
 	private static Color PINK = Color.rgb(186, 50, 174);
 	private static Color GRASS = Color.rgb(125, 186, 81);
 	private static Color BLUE = Color.rgb(50, 127, 186);
@@ -39,6 +40,7 @@ public class Renderer {
 	private static Color TAIGA = Color.rgb(174, 218, 66);
 	private static Color SAVANNAH = Color.rgb(167, 187, 41);
 	private static Color DECIDUOUS = Color.rgb(61, 153, 34);
+	private static Color RAINFOREST = Color.rgb(17, 109, 26);
 	private static Color JUNGLE = Color.rgb(43, 117, 22);
 	private static Color TUNDRA = Color.rgb(163, 154, 105);
 
@@ -49,10 +51,11 @@ public class Renderer {
 	}
 
 	public void fillColourTable() {
-		BIOME_COLOUR_TABLE.put(Biome.SEA, LIGHT_BLUE);
+		BIOME_COLOUR_TABLE.put(Biome.SEA, BLUE);
+		BIOME_COLOUR_TABLE.put(Biome.SHALLOW_SEA, LIGHT_BLUE);
 		BIOME_COLOUR_TABLE.put(Biome.WATER, BLUE);
 		BIOME_COLOUR_TABLE.put(Biome.DESERT, SAND);
-		BIOME_COLOUR_TABLE.put(Biome.TEMPERATE_DESERT, SAND);
+		BIOME_COLOUR_TABLE.put(Biome.TEMPERATE_DESERT, DARK_SAND);
 		BIOME_COLOUR_TABLE.put(Biome.SUBTROPICAL_DESERT, SAND);
 		BIOME_COLOUR_TABLE.put(Biome.SHRUBLAND, SHRUB);
 		BIOME_COLOUR_TABLE.put(Biome.GRASSLAND, GRASS);
@@ -62,7 +65,7 @@ public class Renderer {
 		BIOME_COLOUR_TABLE.put(Biome.TEMPERATE_DECIDUOUS_FOREST, DECIDUOUS);
 		BIOME_COLOUR_TABLE.put(Biome.TEMPERATE_RAIN_FOREST, JUNGLE);
 		BIOME_COLOUR_TABLE.put(Biome.TROPICAL_RAIN_FOREST, DARK_GREEN);
-		BIOME_COLOUR_TABLE.put(Biome.TROPICAL_SEASONAL_FOREST, DECIDUOUS);
+		BIOME_COLOUR_TABLE.put(Biome.TROPICAL_SEASONAL_FOREST, RAINFOREST);
 		BIOME_COLOUR_TABLE.put(Biome.BEACH, SAND);
 		BIOME_COLOUR_TABLE.put(Biome.SCORCHED, SCORCHED);
 		BIOME_COLOUR_TABLE.put(Biome.BARE, GREY);
@@ -74,7 +77,6 @@ public class Renderer {
 	public void drawWorld(World world, Point coords, int zoomLevel, Canvas canvas) {
 
 		// clear screen
-
 		if (mode == Mode.TERRAIN) {
 			drawMap(world.getMap(), coords, zoomLevel, canvas);
 
@@ -148,8 +150,8 @@ public class Renderer {
 		double cellWidth = canvas.getWidth() / zoomLevel;
 		double cellHeight = canvas.getHeight() / zoomLevel;
 
-		double imgWidth = d.getSprite().getWidth() / zoomLevel * 40;
-		double imgHeight = d.getSprite().getHeight() / zoomLevel * 40;
+		double imgWidth = d.getSprite().getWidth();// / zoomLevel * 40;
+		double imgHeight = d.getSprite().getHeight();// / zoomLevel * 40;
 
 		if (d.getPos().x > coords.x && d.getPos().x < coords.x + zoomLevel && d.getPos().y > coords.y
 				&& d.getPos().y < coords.y + zoomLevel) {
