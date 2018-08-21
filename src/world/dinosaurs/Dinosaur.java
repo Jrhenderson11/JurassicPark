@@ -4,11 +4,12 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.newdawn.slick.Image;
+
 import ai.AStar;
 import ai.Translations;
 import heightmaps.generators.RandomUtils;
 import interfaces.Drawable;
-import javafx.scene.image.Image;
 import javafx.util.Pair;
 import version2.Terrain.Biome;
 import world.World;
@@ -56,7 +57,7 @@ public class Dinosaur extends Drawable {
 		this.position = newPos;
 		try {
 			// System.out.println(spritePath);
-			this.sprite = new Image("file:" + spritePath);
+			this.sprite = new Image(spritePath);
 		} catch (Exception e) {
 			System.out.println("could not load sprite for " + name);
 		}

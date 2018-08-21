@@ -2,13 +2,19 @@ package world.plants;
 
 import java.awt.Point;
 
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
 import interfaces.Drawable;
-import javafx.scene.image.Image;
 
 public class Plant extends Drawable {
 
 	public Plant(String spritePath, Point.Double newPos) {
-		this.sprite = new Image("file:"+spritePath);
+		try {
+			this.sprite = new Image(spritePath);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
 		this.position = newPos;
 	}
 	

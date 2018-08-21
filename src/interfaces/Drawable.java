@@ -2,7 +2,7 @@ package interfaces;
 
 import java.awt.Point;
 
-import javafx.scene.image.Image;
+import org.newdawn.slick.Image;
 
 public class Drawable {
 
