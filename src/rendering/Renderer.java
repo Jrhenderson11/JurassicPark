@@ -332,25 +332,26 @@ public class Renderer {
 	}
 
 	public void drawDrawableSlick(Drawable d, Point coords, int zoomLevel, GameContainer container, Graphics g) {
-		// System.out.println("render dinosaur");
 		float cellWidth = container.getWidth() / (float) zoomLevel;
 		float cellHeight = container.getHeight() / (float) zoomLevel;
 
 		Image sprite = d.getSprite().getScaledCopy((1 / ((float) zoomLevel)) * 40);
-		float imgWidth = (float) sprite.getWidth() / (float) zoomLevel * 40;
-		float imgHeight = (float) sprite.getHeight() / (float) zoomLevel * 40;
+		
+		float imgWidth = (float) sprite.getWidth();
+		float imgHeight = (float) sprite.getHeight();
 
+		//System.out.println(imgWidth);
 		if (d.getPos().x > coords.x && d.getPos().x < coords.x + zoomLevel && d.getPos().y > coords.y
 				&& d.getPos().y < coords.y + zoomLevel) {
-			if (d.getDirection() == 1) {
-			} else if (d.getDirection() == -1) {
+			if (d.getDirection() == -1) {
 				sprite = sprite.getFlippedCopy(true, false);
 			}
 			// System.out.println("imgwidth: " + imgWidth);
 			float x = (float) (((d.getPos().x - coords.x) * cellWidth));
-			float y = (float) (((d.getPos().y - coords.y) * cellHeight) - (imgHeight / 2));
+			float y = (float) (((d.getPos().y - coords.y) * cellHeight));
 			g.drawImage(sprite, x, y);
-
+			//g.setColor(Color.red);
+			//g.draw(new Rectangle((float) ((d.getPos().x - coords.x) * cellWidth),(float) ((d.getPos().y - coords.y) * cellHeight), 5f, 5f));
 		}
 	}
 
@@ -361,8 +362,8 @@ public class Renderer {
 			float cellWidth = container.getWidth() / (float) zoomLevel;
 			float cellHeight = container.getHeight() / (float) zoomLevel;
 			Image sprite = d.getSprite().getScaledCopy((1 / ((float) zoomLevel)) * 40);
-			float imgWidth = (float) sprite.getWidth() / (float) zoomLevel * 40;
-			float imgHeight = (float) sprite.getHeight() / (float) zoomLevel * 40;
+			float imgWidth = (float) sprite.getWidth();
+			float imgHeight = (float) sprite.getHeight();
 
 			Point.Double dinoPos = new Point.Double((d.getPos().x - coords.x) * cellWidth,
 					(d.getPos().y - coords.y) * cellHeight);
