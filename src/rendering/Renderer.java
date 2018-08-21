@@ -372,22 +372,12 @@ public class Renderer {
 			g.setColor(new Color(255f, 0f, 0f));
 
 			// name
-			// gc.setFont(Font.font("Nimbus Mono L", FontWeight.BOLD, 12));
-			// gc.fillText();
 			g.drawString(d.getName(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight / 2 + (13 * 3))));
 
 			// activity
-			// gc.setFont(Font.font("Nimbus Mono L", FontWeight.NORMAL, 12));
-			// gc.setFill(Color.RED);
-			// gc.fillText(d.getActivity().toString(), dinoPos.x, dinoPos.y - (imgHeight / 2
-			// + (13 * 2)));
 			g.drawString(d.getActivity().toString(), (float) dinoPos.x,
 					(float) (dinoPos.y - (imgHeight / 2 + (13 * 2))));
 			// mood
-			// gc.setFont(Font.font("Nimbus Mono L", FontWeight.NORMAL, 12));
-			// gc.setFill(Color.RED);
-			// gc.fillText(d.getMood().toString(), dinoPos.x, dinoPos.y - (imgHeight / 2 +
-			// (13 * 1)));
 			g.drawString(d.getMood().toString(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight / 2 + (13 * 1))));
 
 		}
