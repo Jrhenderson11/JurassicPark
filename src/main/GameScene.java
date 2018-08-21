@@ -95,7 +95,7 @@ public class GameScene extends Scene {
 							zoomLevel-=ZOOMSPEED;
 						}
 						coords.translate(ZOOMSPEED/2, ZOOMSPEED/2);
-						if (zoomLevel < 50) {
+						if (zoomLevel < 75) {
 							SPEED=1;
 						}
 
@@ -117,7 +117,7 @@ public class GameScene extends Scene {
 							}
 						}
 						
-						if (zoomLevel >= 50) {
+						if (zoomLevel >= 75) {
 							SPEED=4;
 						}
 					} else if (code==KeyCode.W) {

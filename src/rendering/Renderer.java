@@ -150,8 +150,8 @@ public class Renderer {
 		double cellWidth = canvas.getWidth() / zoomLevel;
 		double cellHeight = canvas.getHeight() / zoomLevel;
 
-		double imgWidth = d.getSprite().getWidth();// / zoomLevel * 40;
-		double imgHeight = d.getSprite().getHeight();// / zoomLevel * 40;
+		double imgWidth = d.getSprite().getWidth() / zoomLevel * 40;
+		double imgHeight = d.getSprite().getHeight() / zoomLevel * 40;
 
 		if (d.getPos().x > coords.x && d.getPos().x < coords.x + zoomLevel && d.getPos().y > coords.y
 				&& d.getPos().y < coords.y + zoomLevel) {
