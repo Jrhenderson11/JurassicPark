@@ -46,12 +46,12 @@ public class Dinosaur extends Drawable {
 
 	private double PURPOSEFUL_SPEED = 0.1;
 	private double LAZY_SPEED = 0.05;
-	
+
 	private double speed = LAZY_SPEED;
 
-	private int waitCounter=0;
+	private int waitCounter = 0;
 	private int waitTime;
-	
+
 	public Dinosaur(String newName, Point.Double newPos, String spritePath, World brave, DIET foodType) {
 		this.name = newName;
 		this.position = newPos;
@@ -80,40 +80,48 @@ public class Dinosaur extends Drawable {
 	}
 
 	public void update() {
-		//System.out.println("activity: " + activity);
+		// System.out.println("activity: " + activity);
 		switch (activity) {
 		case CHILLING:
 			if (mood == MOOD.SAD) {
 				// sit still :(
-				
+
 			} else {
 				// move around a bit
-				if (path.isEmpty() || path == null || (position.equals(path.get(path.size()-1)))) {
-					//wait random amount 
-					if (waitCounter==0) {
+				if (path.isEmpty() || path == null || (position.equals(path.get(path.size() - 1)))) {
+					// wait random amount
+					if (waitCounter == 0) {
 						if (mood == MOOD.CONTENT) {
 							this.waitTime = RandomUtils.randomGaussian(1000, 750);
 						} else {
 							this.waitTime = RandomUtils.randomInt(600, 0);
 						}
 					}
-					//System.out.println("CHILLING: " + waitCounter +" / "+ waitTime);
-					
+					// System.out.println("CHILLING: " + waitCounter +" / "+ waitTime);
+
 					if (waitCounter++ == waitTime) {
-						//make new path
+						// make new path
 						this.speed = LAZY_SPEED;
-						waitCounter=0;
-						
-						int dX = RandomUtils.randomInt(20, -20);
-						int dY = RandomUtils.randomInt(20, -20);
-						Biome terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
-						//check in / out of bounds
-						while (world.getMap().getPosElev(new Point.Double(position.x+dX, position.y+dY)) > 0.7 || terrain == Biome.SEA) {
-							dX = RandomUtils.randomInt(20, -20);
-							dY = RandomUtils.randomInt(20, -20);
-							terrain = world.getMap().getPos(new Point.Double(position.x+dX, position.y+dY));
+						waitCounter = 0;
+						try {
+							int dX = RandomUtils.randomInt(20, -20);
+							int dY = RandomUtils.randomInt(20, -20);
+							Biome terrain;
+							// check in / out of bounds
+							while (position.x + dX < 0 || position.x + dX > world.getMap().getWidth()
+									|| position.y + dY < 0 || position.y + dY > world.getMap().getWidth()
+									|| world.getMap()
+											.getPosElev(new Point.Double(position.x + dX, position.y + dY)) > 0.7
+									|| world.getMap()
+											.getPos(new Point.Double(position.x + dX, position.y + dY)) == Biome.SEA) {
+								dX = RandomUtils.randomInt(20, -20);
+								dY = RandomUtils.randomInt(20, -20);
+								terrain = world.getMap().getPos(new Point.Double(position.x + dX, position.y + dY));
+							}
+							path = (new AStar(this.position, new Point.Double(position.x + dX, position.y + dY),
+									this.world.getMap()).getPath());
+						} catch (Exception e) {
 						}
-						path = (new AStar(this.position, new Point.Double(position.x+dX, position.y+dY), this.world.getMap()).getPath());
 					}
 				} else {
 					proceedOnPath();
@@ -122,7 +130,7 @@ public class Dinosaur extends Drawable {
 
 			break;
 		case MOVING:
-			if ((position.equals(path.get(path.size()-1)))) {
+			if ((position.equals(path.get(path.size() - 1)))) {
 				activity = ACTIVITY.CHILLING;
 			} else {
 				proceedOnPath();
@@ -130,7 +138,7 @@ public class Dinosaur extends Drawable {
 
 			break;
 		case HUNTING:
-			if (path.isEmpty() || path == null || (position.equals(path.get(path.size()-1)))) {
+			if (path.isEmpty() || path == null || (position.equals(path.get(path.size() - 1)))) {
 				activity = ACTIVITY.CHILLING;
 			} else {
 				proceedOnPath();
@@ -138,14 +146,14 @@ public class Dinosaur extends Drawable {
 
 			break;
 		case HUNTING_PLANT:
-			if (position.equals(path.get(path.size()-1))) {
+			if (position.equals(path.get(path.size() - 1))) {
 				eat();
 			} else {
 				proceedOnPath();
 			}
 			break;
 		case HUNTING_WATER:
-			if (position.equals(path.get(path.size()-1))) {
+			if (position.equals(path.get(path.size() - 1))) {
 				drink();
 			} else {
 				proceedOnPath();
@@ -174,8 +182,9 @@ public class Dinosaur extends Drawable {
 				this.speed = PURPOSEFUL_SPEED;
 				System.out.println("HUNTING PLANT");
 				this.activity = ACTIVITY.HUNTING_PLANT;
-				
-				this.path = (new AStar(new Point.Double((int)this.position.getX(), (int) this.position.getY()), findNearestFood(), this.world.getMap()).getPath());
+
+				this.path = (new AStar(new Point.Double((int) this.position.getX(), (int) this.position.getY()),
+						findNearestFood(), this.world.getMap()).getPath());
 				System.out.println("length: " + path.size());
 				pathIndex = 0;
 			}
@@ -194,8 +203,8 @@ public class Dinosaur extends Drawable {
 				pathIndex = 0;
 			}
 		} else {
-			//thirst += 0.1;
-			//System.out.println("thirst: " + thirst);
+			// thirst += 0.1;
+			// System.out.println("thirst: " + thirst);
 		}
 
 	}
@@ -209,7 +218,7 @@ public class Dinosaur extends Drawable {
 			if (next.distance(this.position) < speed) {
 				this.move(next);
 				pathIndex++;
-				//path.remove();
+				// path.remove();
 				// System.out.println("next");
 			} else {
 
@@ -237,7 +246,7 @@ public class Dinosaur extends Drawable {
 		boolean water = false;
 		// check water here
 
-		if (world.getMap().getPos(position) == Biome.WATER || world.getMap().getPos(position)== Biome.SHALLOW_SEA) {
+		if (world.getMap().getPos(position) == Biome.WATER || world.getMap().getPos(position) == Biome.SHALLOW_SEA) {
 			water = true;
 		}
 		// check water nearby
@@ -248,19 +257,19 @@ public class Dinosaur extends Drawable {
 		for (int i = 0; i < 8; i++) {
 			translation = Translations.TRANSLATIONS_GRID.get(i);
 			test = new Point.Double(position.x + translation.getKey(), position.y + translation.getValue());
-			if (world.getMap().getPos(test)==Biome.WATER || world.getMap().getPos(test)==Biome.SHALLOW_SEA) {
+			if (world.getMap().getPos(test) == Biome.WATER || world.getMap().getPos(test) == Biome.SHALLOW_SEA) {
 				water = true;
 				break;
 			}
 		}
-		
+
 		if (water) {
 			activity = ACTIVITY.DRINKING;
 			System.out.println("SLURP");
-			
-			thirst -= MAXTHIRST/100;
+
+			thirst -= MAXTHIRST / 100;
 			if (thirst <= 0) {
-				this.activity=ACTIVITY.CHILLING;
+				this.activity = ACTIVITY.CHILLING;
 			}
 
 		} else {
@@ -268,12 +277,12 @@ public class Dinosaur extends Drawable {
 			return;
 		}
 	}
-	
+
 	private void eat() {
 		boolean food = false;
 		// check water here
 
-		if (findNearestFood().distance(this.position)<1) {
+		if (findNearestFood().distance(this.position) < 1) {
 			food = true;
 		}
 
@@ -283,19 +292,19 @@ public class Dinosaur extends Drawable {
 		for (int i = 0; i < 8; i++) {
 			translation = Translations.TRANSLATIONS_GRID.get(i);
 			test = new Point.Double(position.x + translation.getKey(), position.y + translation.getValue());
-			if (findNearestFood().distance(this.position)<1) {
+			if (findNearestFood().distance(this.position) < 1) {
 				food = true;
 				break;
 			}
 		}
-		
+
 		if (food) {
 			activity = ACTIVITY.EATING;
 			System.out.println("CHOMP");
-			
-			hunger -= MAXHUNGER/100;
+
+			hunger -= MAXHUNGER / 100;
 			if (hunger <= 0) {
-				this.activity=ACTIVITY.CHILLING;
+				this.activity = ACTIVITY.CHILLING;
 			}
 
 		} else {
@@ -311,7 +320,7 @@ public class Dinosaur extends Drawable {
 			double dist = Integer.MAX_VALUE;
 			for (Plant p : world.getMap().getPlants()) {
 				if (p.getPos().distance(this.position) < dist) {
-					//System.out.println(p.getPos() + ": " + dist);
+					// System.out.println(p.getPos() + ": " + dist);
 					dist = p.getPos().distance(this.position);
 					foodPos = p.getPos();
 				}
@@ -325,8 +334,8 @@ public class Dinosaur extends Drawable {
 		this.position = new Point.Double(this.position.x + dX, this.position.y + dY);
 		if (dX < 0) {
 			this.direction = -1;
-		} else if (dX>0) {
-			this.direction = 1;		
+		} else if (dX > 0) {
+			this.direction = 1;
 		}
 	}
 

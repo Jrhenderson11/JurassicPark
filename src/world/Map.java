@@ -6,7 +6,7 @@ import java.util.List;
 
 import version2.Terrain;
 import version2.Terrain.Biome;
-import world.plants.Fern;
+import world.plants.Grass;
 import world.plants.Plant;
 
 public class Map {
@@ -20,7 +20,7 @@ public class Map {
 		//this.plants.add(new Fern(new Point.Double(250,50)));
 		//generate trees using noise
 		for (Point.Double spawnPoint : terrain.getTreePositions()) {
-			this.plants.add(new Fern(spawnPoint));
+			this.plants.add(new Grass(spawnPoint));
 		}
 	}
 	

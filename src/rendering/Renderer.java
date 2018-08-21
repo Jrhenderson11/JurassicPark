@@ -53,7 +53,9 @@ public class Renderer {
 
 	private static HashMap<Biome, Color> BIOME_COLOUR_TABLE = new HashMap<Biome, Color>();
 
-	private Image background = null;
+	private Image terrainBackground = null;
+	private Image heightmapBackground = null;
+	private Image moisturemapBackground = null;
 
 	public Renderer() {
 		fillColourTable();
@@ -113,11 +115,72 @@ public class Renderer {
 				}
 			}
 		}
-		// Image background = null;
 		try {
 			System.out.println("width: " + map.getWidth());
-			background = new Image(container.getWidth(), container.getHeight());
-			g.copyArea(background, 0, 0);
+			terrainBackground = new Image(container.getWidth(), container.getHeight());
+			g.copyArea(terrainBackground, 0, 0);
+			g.flush();
+
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		Function<Double, double[]> grad = Gradient
+				.gradient_func(new double[][] { { 0, 0, 255 }, { 0, 255, 255 }, { 255, 255, 0 }, { 255, 0, 0 } });
+
+		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
+			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
+
+				try {
+					double[] test = grad.apply((Double) map.getTerrain().getElevation()[iX][iY]);
+					// System.out.println(test[0] + ", " + test[1] + ", " + test[2]);
+
+					g.setColor(new Color((float) test[0] / 255f, (float) test[1] / 255f, (float) test[2] / 255f));
+					// gc.fillRect(((iX - coords.x) * cell_width), ((iY - coords.y) * cell_height),
+					// Math.ceil(cell_width),Math.ceil(cell_height));
+					Rectangle rect = new Rectangle((float) ((iX - coords.x) * cell_width),
+							(float) ((iY - coords.y) * cell_height), (float) Math.ceil(cell_width),
+							(float) Math.ceil(cell_height));
+
+					g.draw(rect);
+					g.fill(rect);
+				} catch (Exception e) {
+					// System.out.println("rendering went wrong");
+				}
+			}
+		}
+		try {
+			System.out.println("width: " + map.getWidth());
+			heightmapBackground = new Image(container.getWidth(), container.getHeight());
+			g.copyArea(heightmapBackground, 0, 0);
+			g.flush();
+
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
+			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
+
+				try {
+					double[] test = grad.apply((Double) map.getTerrain().getMoisture()[iX][iY]);
+					// System.out.println(test[0] + ", " + test[1] + ", " + test[2]);
+
+					g.setColor(new Color((float) test[0] / 255f, (float) test[1] / 255f, (float) test[2] / 255f));
+					// gc.fillRect(((iX - coords.x) * cell_width), ((iY - coords.y) * cell_height),
+					// Math.ceil(cell_width),Math.ceil(cell_height));
+					Rectangle rect = new Rectangle((float) ((iX - coords.x) * cell_width),
+							(float) ((iY - coords.y) * cell_height), (float) Math.ceil(cell_width),
+							(float) Math.ceil(cell_height));
+
+					g.draw(rect);
+					g.fill(rect);
+				} catch (Exception e) {
+					// System.out.println("rendering went wrong");
+				}
+			}
+		}
+		try {
+			moisturemapBackground = new Image(container.getWidth(), container.getHeight());
+			g.copyArea(moisturemapBackground, 0, 0);
 			g.flush();
 
 		} catch (SlickException e) {
@@ -165,9 +228,9 @@ public class Renderer {
 				}
 			}
 		} else if (mode == Mode.MOISTURE) {
-			drawHeightMapSlick(world.getMap().getTerrain().getMoisture(), coords, zoomLevel, container, g);
+			drawHeightMapSlick(world.getMap(), coords, zoomLevel, container, g, false);
 		} else if (mode == Mode.HEIGHTMAP) {
-			drawHeightMapSlick(world.getMap().getTerrain().getElevation(), coords, zoomLevel, container, g);
+			drawHeightMapSlick(world.getMap(), coords, zoomLevel, container, g, true);
 		}
 
 	}
@@ -198,30 +261,8 @@ public class Renderer {
 		float cell_width = container.getWidth() / (float) zoomLevel;
 		float cell_height = container.getHeight() / (float) zoomLevel;
 
-		Image scaledBackground = background.getScaledCopy(((float) map.getWidth()/(float) zoomLevel));
-		g.drawImage(scaledBackground, ((float) 0-(coords.x*cell_width)), ((float) 0-(coords.y*cell_height)));
-//
-//		// draw & fill
-//		Terrain terrain = map.getTerrain();
-//
-//		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
-//			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
-//				try {
-//					g.setColor(BIOME_COLOUR_TABLE.get(terrain.getBiomeLayer()[iX][iY]));
-//
-//					float x = (float) ((iX - coords.x) * cell_width);
-//					float y = (float) ((iY - coords.y) * cell_height);
-//					float width = (float) (cell_width);
-//					float height = (float) (cell_height);
-//					Rectangle rect = new Rectangle(x, y, width, height);
-//
-//					// g.draw(rect);
-//					g.fill(rect);
-//				} catch (Exception e) {
-//					// System.out.println("rendering went wrong");
-//				}
-//			}
-//		}
+		Image scaledBackground = terrainBackground.getScaledCopy(((float) map.getWidth() / (float) zoomLevel));
+		g.drawImage(scaledBackground, ((float) 0 - (coords.x * cell_width)), ((float) 0 - (coords.y * cell_height)));
 	}
 
 	private void drawHeightMap(double[][] map, Point coords, int zoomLevel, Canvas canvas) {
@@ -240,7 +281,6 @@ public class Renderer {
 					// System.out.println(test[0] + ", " + test[1] + ", " + test[2]);
 
 					// gc.setFill(Color.rgb((int) test[0], (int) test[1], (int) test[2]));
-
 					gc.fillRect(((iX - coords.x) * cell_width), ((iY - coords.y) * cell_height), Math.ceil(cell_width),
 							Math.ceil(cell_height));
 				} catch (Exception e) {
@@ -250,33 +290,20 @@ public class Renderer {
 		}
 	}
 
-	private void drawHeightMapSlick(double[][] map, Point coords, int zoomLevel, GameContainer container, Graphics g) {
+	private void drawHeightMapSlick(Map map, Point coords, int zoomLevel, GameContainer container, Graphics g,
+			boolean elev) {
 		float cell_width = container.getWidth() / (float) zoomLevel;
 		float cell_height = container.getHeight() / (float) zoomLevel;
-		Function<Double, double[]> grad = Gradient
-				.gradient_func(new double[][] { { 0, 0, 255 }, { 0, 255, 255 }, { 255, 255, 0 }, { 255, 0, 0 } });
+		Image scaledBackground;
+		if (elev) {
+			scaledBackground = heightmapBackground.getScaledCopy(((float) map.getWidth() / (float) zoomLevel));
 
-		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
-			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
+		} else {
+			scaledBackground = moisturemapBackground.getScaledCopy(((float) map.getWidth() / (float) zoomLevel));
 
-				try {
-					double[] test = grad.apply((Double) map[iX][iY]);
-					// System.out.println(test[0] + ", " + test[1] + ", " + test[2]);
-
-					g.setColor(new Color((float) test[0], (float) test[1], (float) test[2]));
-					// gc.fillRect(((iX - coords.x) * cell_width), ((iY - coords.y) * cell_height),
-					// Math.ceil(cell_width),Math.ceil(cell_height));
-					Rectangle rect = new Rectangle((float) ((iX - coords.x) * cell_width),
-							(float) ((iY - coords.y) * cell_height), (float) Math.ceil(cell_width),
-							(float) Math.ceil(cell_height));
-
-					g.draw(rect);
-					g.fill(rect);
-				} catch (Exception e) {
-					// System.out.println("rendering went wrong");
-				}
-			}
 		}
+
+		g.drawImage(scaledBackground, ((float) 0 - (coords.x * cell_width)), ((float) 0 - (coords.y * cell_height)));
 	}
 
 	public void drawDrawable(Drawable d, Point coords, int zoomLevel, Canvas canvas) {
@@ -320,7 +347,7 @@ public class Renderer {
 				sprite = sprite.getFlippedCopy(true, false);
 			}
 			// System.out.println("imgwidth: " + imgWidth);
-			float x = (float) (((d.getPos().x - coords.x) * cellWidth) - (imgWidth / 2));
+			float x = (float) (((d.getPos().x - coords.x) * cellWidth));
 			float y = (float) (((d.getPos().y - coords.y) * cellHeight) - (imgHeight / 2));
 			g.drawImage(sprite, x, y);
 

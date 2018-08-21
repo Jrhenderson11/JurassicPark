@@ -9,7 +9,17 @@ import interfaces.Drawable;
 
 public class Plant extends Drawable {
 
+	public Plant() {}
 	public Plant(String spritePath, Point.Double newPos) {
+		try {
+			this.sprite = new Image(spritePath);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		this.position = newPos;
+	}
+	
+	public void setup(String spritePath, Point.Double newPos) {
 		try {
 			this.sprite = new Image(spritePath);
 		} catch (SlickException e) {
