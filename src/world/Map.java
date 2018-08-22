@@ -6,6 +6,7 @@ import java.util.List;
 
 import version2.Terrain;
 import version2.Terrain.Biome;
+import world.plants.Fir;
 import world.plants.Grass;
 import world.plants.Plant;
 
@@ -18,8 +19,12 @@ public class Map {
 		generateNewMap("island");
 		this.plants = new ArrayList<Plant>();
 		//this.plants.add(new Fern(new Point.Double(250,50)));
+	
 		//generate trees using noise
 		for (Point.Double spawnPoint : terrain.getTreePositions()) {
+			this.plants.add(new Fir(spawnPoint));
+		}
+		for (Point.Double spawnPoint : terrain.getGrassPositions()) {
 			this.plants.add(new Grass(spawnPoint));
 		}
 	}

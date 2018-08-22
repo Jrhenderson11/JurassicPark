@@ -1,25 +1,14 @@
 package world.plants;
 
 import java.awt.Point;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Grass extends Plant {
-	
-	public Grass(Point.Double newPos) {
-		switch (new Random().nextInt(2)) {
-		case 1:
-			setup("assets/grass1.png", newPos);			
-			break;
-			
-		case 2:
-			setup("assets/grass2.png", newPos);			
-			break;
-			
-		default:
-			setup("assets/grass3.png", newPos);
-			break;
-		}
 
+	public Grass(Point.Double newPos) {
+		spriteNames = new String[] {"assets/grass1.png", "assets/grass2.png", "assets/grass3.png"};
+		setup(spriteNames[new Random().nextInt(spriteNames.length)], newPos);
 	}
 
 }
