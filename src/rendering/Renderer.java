@@ -338,17 +338,15 @@ public class Renderer {
 		float imgHeight = (float) sprite.getHeight();
 
 		//System.out.println(imgWidth);
-		if (d.getPos().x > coords.x && d.getPos().x < coords.x + zoomLevel && d.getPos().y > coords.y
-				&& d.getPos().y < coords.y + zoomLevel) {
+		if (d.getPos().x > coords.x-5 && d.getPos().x < coords.x + zoomLevel + 5 && d.getPos().y > coords.y-7
+				&& d.getPos().y < coords.y + zoomLevel+7) {
 			if (d.getDirection() == -1) {
 				sprite = sprite.getFlippedCopy(true, false);
 			}
 			// System.out.println("imgwidth: " + imgWidth);
-			float x = (float) (((d.getPos().x - coords.x) * cellWidth));
-			float y = (float) (((d.getPos().y - coords.y) * cellHeight));
+			float x = (float) (((d.getPos().x - coords.x) * cellWidth) - imgWidth/2);
+			float y = (float) (((d.getPos().y - coords.y) * cellHeight) - imgHeight);
 			g.drawImage(sprite, x, y);
-			//g.setColor(Color.red);
-			//g.draw(new Rectangle((float) ((d.getPos().x - coords.x) * cellWidth),(float) ((d.getPos().y - coords.y) * cellHeight), 5f, 5f));
 		}
 	}
 

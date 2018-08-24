@@ -26,13 +26,16 @@ public class SimpleTest extends BasicGame {
 	private Point coords = new Point(0, 0);
 	private int zoomLevel;
 	private int ZOOMSPEED = 2;
-	private int SPEED = 4;
+	private int DEFAULT_SPEED = 1;
+	private int SPEED = DEFAULT_SPEED;
 	int height, width;
 
 	private Input input;
 
 	private boolean started = false;
 	Set<Integer> keysPressed;
+	public Object lock = new Object();
+	public Object lock2 = new Object();
 
 	public SimpleTest() {
 		super("Jurassic Park");
@@ -59,68 +62,95 @@ public class SimpleTest extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
 		world.update();
+		synchronized (lock2) {
 
-		for (Integer i : keysPressed) {
-			if (i == Input.KEY_Z) {
+			if (keysPressed.contains(Input.KEY_Z)) {
 				// filer.saveStringMap("files/map.txt", grid);
-			} else if (i == Input.KEY_SPACE) {
-				// map = new Original(type);
-				// map.make();
-				// grid = map.getGrid();
+			}
+			if (keysPressed.contains(Input.KEY_SPACE)) {
+			}
+			if (keysPressed.contains(Input.KEY_UP)) {
 
-				// theStage.show();
+				synchronized (lock) {
+					// zoom in
+					if (zoomLevel > 10) {
+						zoomLevel -= ZOOMSPEED;
+						if (coords.y + ZOOMSPEED / 2 > 0 && coords.y + ZOOMSPEED / 2 < height) {
+							coords.translate(0, ZOOMSPEED / 2);
+						}
+						if (coords.x + ZOOMSPEED / 2 > 0 && coords.x + ZOOMSPEED / 2 < width) {
+							coords.translate(ZOOMSPEED / 2, 0);
+						}
+						if (zoomLevel < 75) {
+							SPEED = 1;
+						}
+					}
 
-			} else if (i == Input.KEY_UP) {
-				if (zoomLevel > 4) {
-					zoomLevel -= ZOOMSPEED;
-				}
-				coords.translate(ZOOMSPEED / 2, ZOOMSPEED / 2);
-				if (zoomLevel < 75) {
-					SPEED = 1;
 				}
 
-			} else if (i == Input.KEY_DOWN) {
-				if (zoomLevel < height - 1) {
-					zoomLevel += ZOOMSPEED;
-					coords.translate(-ZOOMSPEED / 2, -ZOOMSPEED / 2);
-					if (coords.y + zoomLevel > height) {
-						coords.translate(0, -ZOOMSPEED);
-					}
-					if (coords.x + zoomLevel > width) {
-						coords.translate(-ZOOMSPEED, 0);
-					}
-					if (coords.y < 0) {
-						coords.translate(0, ZOOMSPEED);
-					}
-					if (coords.x < 0) {
-						coords.translate(ZOOMSPEED, 0);
-					}
-				}
-				if (zoomLevel >= 75) {
-					SPEED = 4;
-				}
-			} else if (i == Input.KEY_W) {
+			}
+			if (keysPressed.contains(Input.KEY_DOWN)) {
+				synchronized (lock) {
+					// zoom out
+					if (zoomLevel < height - 1) {
+						zoomLevel += ZOOMSPEED;
+						if (coords.y - ZOOMSPEED / 2 > 0 && coords.y - ZOOMSPEED / 2 < height) {
+							coords.translate(0, -ZOOMSPEED / 2);
+						}
+						if (coords.x - ZOOMSPEED / 2 > 0 && coords.x - ZOOMSPEED / 2 < width) {
+							coords.translate(-ZOOMSPEED / 2, 0);
+						}
 
-				if (coords.y > 0) {
+						if (coords.y + zoomLevel > height) {
+							coords.translate(0, -ZOOMSPEED);
+						}
+						if (coords.x + zoomLevel > width) {
+							coords.translate(-ZOOMSPEED, 0);
+						}
+						if (coords.y < 0) {
+							coords.translate(0, ZOOMSPEED);
+						}
+						if (coords.x < 0) {
+							coords.translate(ZOOMSPEED, 0);
+						}
+					}
+					if (zoomLevel >= 75) {
+						SPEED = DEFAULT_SPEED;
+					}
+				}
+			}
+			if (keysPressed.contains(Input.KEY_W)) {
+
+				if (coords.y - SPEED >= 0) {
 					coords.translate(0, -SPEED);
 				}
-			} else if (i == Input.KEY_S) {
-				if (coords.y + zoomLevel < height) {
-					coords.translate(0, SPEED);
+			}
+			if (keysPressed.contains(Input.KEY_S)) {
+
+				synchronized (lock) {
+					if (coords.y + zoomLevel + SPEED <= height) {
+						coords.translate(0, SPEED);
+					}
 				}
-			} else if (i == Input.KEY_A) {
-				if (coords.x > 0) {
+			}
+			if (keysPressed.contains(Input.KEY_A)) {
+
+				if (coords.x - SPEED >= 0) {
 					coords.translate(-SPEED, 0);
 				}
-			} else if (i == Input.KEY_D) {
-				if (coords.x + zoomLevel < width) {
-					coords.translate(SPEED, 0);
+			}
+			if (keysPressed.contains(Input.KEY_D)) {
+
+				synchronized (lock) {
+					if (coords.x + zoomLevel + SPEED <= width) {
+						coords.translate(SPEED, 0);
+					}
 				}
-			} else if (i == Input.KEY_T) {
+			}
+			if (keysPressed.contains(Input.KEY_T)) {
 
 			}
 		}
-
 	}
 
 	@Override
@@ -129,8 +159,11 @@ public class SimpleTest extends BasicGame {
 			renderer.initiateMap(world.getMap(), coords, zoomLevel, container, g);
 			started = true;
 		}
-		renderer.drawWorldSlick(world, coords, zoomLevel, container, g);
-		// g.drawString("Hello, Slick world!", 0, 300);
+		synchronized (lock2) {
+			renderer.drawWorldSlick(world, coords, zoomLevel, container, g);
+			// g.drawString("Hello, Slick world!", 0, 300);
+
+		}
 	}
 
 	public static void main(String[] args) {

@@ -6,6 +6,7 @@ import java.util.List;
 
 import version2.Terrain;
 import version2.Terrain.Biome;
+import world.plants.Bush;
 import world.plants.Fir;
 import world.plants.Grass;
 import world.plants.Plant;
@@ -26,6 +27,9 @@ public class Map {
 		}
 		for (Point.Double spawnPoint : terrain.getGrassPositions()) {
 			this.plants.add(new Grass(spawnPoint));
+		}
+		for (Point.Double spawnPoint : terrain.getBushPositions()) {
+			this.plants.add(new Bush(spawnPoint));
 		}
 	}
 	
