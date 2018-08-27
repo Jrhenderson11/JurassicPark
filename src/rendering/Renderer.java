@@ -38,14 +38,14 @@ public class Renderer {
 	private static Color GREY = new Color(98f, 102f, 101f);
 	private static Color LIGHT_BLUE = new Color(114f, 219f, 245f);
 	private static Color DARK_GREEN = new Color(50f, 86f, 29f);
-	private static Color SCORCHED = new Color(211f, 182f, 40f);
-	private static Color SHRUB = new Color(195f, 218f, 66f);
-	private static Color TAIGA = new Color(174f, 218f, 66f);
+	private static Color MARSH = BLUE;//new Color(77f, 94f, 119f);
+	private static Color SHRUB = new Color(148f, 111f, 11f); //MUD colour!!!!
+	private static Color DRIED_MUD = new Color(163f, 154f, 105f);//dried mud
 	private static Color SAVANNAH = new Color(167f, 187f, 41f);
 	private static Color DECIDUOUS = new Color(61f, 153f, 34f);
 	private static Color RAINFOREST = new Color(17f, 109f, 26f);
 	private static Color JUNGLE = new Color(43f, 117f, 22f);
-	private static Color TUNDRA = new Color(163f, 154f, 105f);
+	private static Color TUNDRA = new Color(174f, 218f, 66f);
 	private static Color WHITE = new Color(255f, 255f, 255f);
 
 	private static HashMap<Biome, Color> BIOME_COLOUR_TABLE = new HashMap<Biome, Color>();
@@ -68,17 +68,17 @@ public class Renderer {
 		BIOME_COLOUR_TABLE.put(Biome.SHRUBLAND, SHRUB);
 		BIOME_COLOUR_TABLE.put(Biome.GRASSLAND, GRASS);
 		BIOME_COLOUR_TABLE.put(Biome.SAVANNAH, SAVANNAH);
-		BIOME_COLOUR_TABLE.put(Biome.TAIGA, TAIGA);
+		//BIOME_COLOUR_TABLE.put(Biome.TAIGA, DRIED_MUD);
 		BIOME_COLOUR_TABLE.put(Biome.FOREST, DARK_GREEN);
-		BIOME_COLOUR_TABLE.put(Biome.TEMPERATE_DECIDUOUS_FOREST, DECIDUOUS);
+		BIOME_COLOUR_TABLE.put(Biome.FERNLAND, DECIDUOUS);
 		BIOME_COLOUR_TABLE.put(Biome.TEMPERATE_RAIN_FOREST, JUNGLE);
 		BIOME_COLOUR_TABLE.put(Biome.TROPICAL_RAIN_FOREST, DARK_GREEN);
 		BIOME_COLOUR_TABLE.put(Biome.TROPICAL_SEASONAL_FOREST, RAINFOREST);
 		BIOME_COLOUR_TABLE.put(Biome.BEACH, SAND);
-		BIOME_COLOUR_TABLE.put(Biome.SCORCHED, SCORCHED);
+		BIOME_COLOUR_TABLE.put(Biome.MARSH, MARSH);
 		BIOME_COLOUR_TABLE.put(Biome.BARE, GREY);
-		BIOME_COLOUR_TABLE.put(Biome.TUNDRA, TUNDRA);
-		BIOME_COLOUR_TABLE.put(Biome.SNOW, WHITE);
+		BIOME_COLOUR_TABLE.put(Biome.DRIED_MUD, DRIED_MUD);
+		//BIOME_COLOUR_TABLE.put(Biome.SNOW, MARSH);
 		// normalise
 		for (Biome b : BIOME_COLOUR_TABLE.keySet()) {
 			Color c = BIOME_COLOUR_TABLE.get(b);

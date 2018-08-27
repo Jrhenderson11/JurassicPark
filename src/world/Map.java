@@ -2,12 +2,16 @@ package world;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import version2.Terrain;
 import version2.Terrain.Biome;
+import world.plants.Beech;
 import world.plants.Bush;
 import world.plants.Cactus;
+import world.plants.Fern;
 import world.plants.Fir;
 import world.plants.Grass;
 import world.plants.Plant;
@@ -25,20 +29,42 @@ public class Map {
 
 		// generate trees using noise
 		for (Point.Double spawnPoint : terrain.getTreePositions()) {
-			Biome point = terrain.getBiomeLayer()[(int) spawnPoint.x][(int) spawnPoint.y];
-			if (point==Biome.DESERT ||point==Biome.TEMPERATE_DESERT || point==Biome.SUBTROPICAL_DESERT) {
+			Biome point = getPos(spawnPoint);
+			if (point == Biome.DESERT || point == Biome.TEMPERATE_DESERT || point == Biome.SUBTROPICAL_DESERT) {
 				this.plants.add(new Cactus(spawnPoint));
+			} else if (point == Biome.DRIED_MUD || point == Biome.TUNDRA || point == Biome.SHRUBLAND) {
+				this.plants.add(new Beech(spawnPoint));
 			} else {
 				this.plants.add(new Fir(spawnPoint));
 			}
-
 		}
+
 		for (Point.Double spawnPoint : terrain.getGrassPositions()) {
 			this.plants.add(new Grass(spawnPoint));
 		}
 		for (Point.Double spawnPoint : terrain.getBushPositions()) {
-			this.plants.add(new Bush(spawnPoint));
+			Biome point = getPos(spawnPoint);
+			if (point == Biome.FERNLAND) {
+				this.plants.add(new Fern(spawnPoint));
+			} else {
+				this.plants.add(new Bush(spawnPoint));
+			}
 		}
+
+		// sort all plants and bushes
+		this.plants.sort(new Comparator<Plant>() {
+			@Override
+			public int compare(Plant arg0, Plant arg1) {
+				if (arg0.getPos().y > arg1.getPos().y) {
+					return 1;
+				} else if (arg0.getPos().y == arg1.getPos().y) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
+		});
+
 	}
 
 	public void generateNewMap(String type) {
@@ -54,15 +80,15 @@ public class Map {
 	}
 
 	public List<Plant> getTreePlants() {
-		return (List<Plant>) plants.stream().filter(x -> x.getPlantType() == PlantType.TREE);
+		return (plants.stream().filter(x -> x.getPlantType() == PlantType.TREE)).collect(Collectors.toList());
 	}
 
 	public List<Plant> getSmallPlants() {
-		return (List<Plant>) plants.stream().filter(x -> x.getPlantType() == PlantType.SMALL);
+		return plants.stream().filter(x -> x.getPlantType() == PlantType.SMALL).collect(Collectors.toList());
 	}
 
 	public List<Plant> getGrassPlants() {
-		return (List<Plant>) plants.stream().filter(x -> x.getPlantType() == PlantType.GRASS);
+		return plants.stream().filter(x -> x.getPlantType() == PlantType.GRASS).collect(Collectors.toList());
 	}
 
 	public int getWidth() {
