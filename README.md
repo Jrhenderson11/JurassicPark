@@ -10,16 +10,16 @@ Requires my random map generation project (JMapper) as well to power the maps, I
 
 A* path finding code written by https://github.com/lucykgriffiths
 
-plant art from https://ansimuz.itch.io/trees-bushes-sprites
+plant art from https://ansimuz.itch.io/trees-bushes-sprites and other places on the interwebs (google plant with clip art filter or search 'ascii plant art')
 
 ## TODO:
 
  - add more dinosaurs
  - enhance behaviours
- - plant spawning
  - astar in new thread
  - randomize thirst / hunger amounts
  - add nutrients to plants
- - add animations to diosaurs
  - add colour variations to dinosaurs
- - improve map generation
+ - add flowers
+ - rivers
+ - log4j

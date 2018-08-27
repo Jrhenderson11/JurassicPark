@@ -108,8 +108,7 @@ public class AStar {
 		this.considered = new ArrayList<>();
 		List<Point.Double> path = new LinkedList<>();
 		// quick test to see neither are unreachable
-		if (level.getPosElev(startPoint) > 0.6 || level.getPosElev(finishPoint) > 0.6
-				|| level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
+		if (level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
 			System.out.println("destination unreachable, stopping");
 			return path;
 		}
@@ -144,9 +143,9 @@ public class AStar {
 				if (!visited.contains(t)) {
 
 					// sand and grass cost 1
-					if (!level.getTerrain().getBiomeLayer()[(int) t.x][(int) t.y].equals(Biome.WATER)) {
-						cost.put(t, cost.get(current) + 1);
-					} else if (level.getTerrain().getBiomeLayer()[(int) t.x][(int) t.y].equals(Biome.WATER)) {
+					if (level.getTerrain().getBiomeLayer()[(int) t.x][(int) t.y].equals(Biome.WATER) || level.getTerrain().getBiomeLayer()[(int) t.x][(int) t.y].equals(Biome.SHALLOW_SEA)) {
+						cost.put(t, cost.get(current) + RIVER_COST);
+					} else {
 						cost.put(t, cost.get(current) + RIVER_COST);
 					}
 
@@ -176,8 +175,7 @@ public class AStar {
 	public Point.Double findNearestWater() {
 		this.considered = new ArrayList<>();
 		// quick test to see neither are unreachable
-		if (level.getPosElev(startPoint) > 0.6 || level.getPosElev(finishPoint) > 0.6
-				|| level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
+		if (level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
 			System.out.println("destination unreachable, stopping");
 		}
 		cost.put(startPoint, 0.0);
@@ -246,7 +244,7 @@ public class AStar {
 		for (Point.Double p : neighbours) {
 			wall = level.getTerrain().getBiomeLayer()[(int) p.x][(int) p.y];
 			// Remove those which are off the grid or collide with a wall
-			if (!(wall == Biome.SEA) && !(level.getTerrain().getElevation()[(int) p.x][(int) p.y] > 0.6)) {
+			if (!(wall == Biome.SEA)) {
 				validNeighbours.add(p);
 				// System.out.println("adding " + p);
 			} else {
@@ -264,6 +262,7 @@ public class AStar {
 	 */
 
 	private ArrayList<Point.Double> getNeighbours(Point.Double p, List<Point.Double> visited) {
+		//System.out.println("getting neighbours");
 		ArrayList<Point.Double> neighbours = new ArrayList<>();
 		Point.Double current;
 		Biome val;
@@ -279,7 +278,7 @@ public class AStar {
 						&& !considered.contains(current)) {
 					neighbours.add(current);
 					considered.add(current);
-					// System.out.println(current);
+					System.out.println(current);
 				}
 			} catch (ArrayIndexOutOfBoundsException e) {
 

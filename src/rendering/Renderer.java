@@ -367,13 +367,12 @@ public class Renderer {
 			g.setColor(new Color(255f, 0f, 0f));
 
 			// name
-			g.drawString(d.getName(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight / 2 + (13 * 3))));
+			g.drawString(d.getName(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight + (13 * 3))));
 
 			// activity
-			g.drawString(d.getActivity().toString(), (float) dinoPos.x,
-					(float) (dinoPos.y - (imgHeight / 2 + (13 * 2))));
+			g.drawString(d.getActivity().toString(), (float) dinoPos.x,	(float) (dinoPos.y - (imgHeight + (13 * 2))));
 			// mood
-			g.drawString(d.getMood().toString(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight / 2 + (13 * 1))));
+			g.drawString(d.getMood().toString(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight + (13 * 1))));
 
 		}
 	}

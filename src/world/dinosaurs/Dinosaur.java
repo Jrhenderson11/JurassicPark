@@ -92,10 +92,11 @@ public class Dinosaur extends Drawable {
 					// wait random amount
 					if (waitCounter == 0) {
 						if (mood == MOOD.CONTENT) {
-							this.waitTime = RandomUtils.randomGaussian(1000, 750);
+							this.waitTime = RandomUtils.randomPosGaussian(1000, 750);
 						} else {
 							this.waitTime = RandomUtils.randomInt(600, 0);
 						}
+						// System.out.println("TIME: " + waitTime);
 					}
 					// System.out.println("CHILLING: " + waitCounter +" / "+ waitTime);
 
@@ -120,9 +121,12 @@ public class Dinosaur extends Drawable {
 							}
 							path = (new AStar(this.position, new Point.Double(position.x + dX, position.y + dY),
 									this.world.getMap()).getPath());
+							pathIndex = 0;
 						} catch (Exception e) {
+							System.out.println(e.getStackTrace());
 						}
 					}
+					// System.out.println(waitCounter);
 				} else {
 					proceedOnPath();
 				}
@@ -173,7 +177,7 @@ public class Dinosaur extends Drawable {
 		}
 
 		// trigger hunger or thirst
-		//hunger += 0.1;
+		// hunger += 0.1;
 
 		if (hunger >= MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
 			// find and seek food
@@ -211,7 +215,8 @@ public class Dinosaur extends Drawable {
 	private void proceedOnPath() {
 		if (!path.isEmpty() && pathIndex < path.size()) {
 			Point.Double next = path.get(pathIndex);
-			// System.out.println("MOVING TO " + next.x + ", " + next.y);
+			// System.out.println("MOVING TO " + next.x + ", " + next.y + " FROM " +
+			// position.x + ", " + position.y);
 
 			// snap to
 			if (next.distance(this.position) < speed) {
@@ -237,6 +242,11 @@ public class Dinosaur extends Drawable {
 				// System.out.println("moving to point");
 			}
 
+		} else {
+			// System.out.println("hmm path is done?");
+			// for (Point.Double p : path) {
+			// System.out.println(p);
+			// }
 		}
 
 	}
@@ -317,7 +327,7 @@ public class Dinosaur extends Drawable {
 		if (diet == DIET.HERBIVORE) {
 			// find plant
 			double dist = Integer.MAX_VALUE;
-			for (Plant p : world.getMap().getPlants()) {
+			for (Plant p : world.getMap().getSmallPlants()) {
 				if (p.getPos().distance(this.position) < dist) {
 					// System.out.println(p.getPos() + ": " + dist);
 					dist = p.getPos().distance(this.position);
@@ -325,7 +335,8 @@ public class Dinosaur extends Drawable {
 				}
 			}
 		}
-		//System.out.println("nearest plant to " + name + " is at " + foodPos.x + ", " + foodPos.y);
+		// System.out.println("nearest plant to " + name + " is at " + foodPos.x + ", "
+		// + foodPos.y);
 		return foodPos;
 	}
 
