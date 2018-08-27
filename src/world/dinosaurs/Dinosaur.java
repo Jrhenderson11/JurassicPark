@@ -173,7 +173,7 @@ public class Dinosaur extends Drawable {
 		}
 
 		// trigger hunger or thirst
-		hunger += 0.1;
+		//hunger += 0.1;
 
 		if (hunger >= MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
 			// find and seek food
@@ -188,7 +188,6 @@ public class Dinosaur extends Drawable {
 				System.out.println("length: " + path.size());
 				pathIndex = 0;
 			}
-
 		}
 
 		if (thirst >= MAXTHIRST) {
@@ -203,7 +202,7 @@ public class Dinosaur extends Drawable {
 				pathIndex = 0;
 			}
 		} else {
-			// thirst += 0.1;
+			thirst += 0.1;
 			// System.out.println("thirst: " + thirst);
 		}
 
@@ -326,7 +325,7 @@ public class Dinosaur extends Drawable {
 				}
 			}
 		}
-		System.out.println("nearest plant to " + name + " is at " + foodPos.x + ", " + foodPos.y);
+		//System.out.println("nearest plant to " + name + " is at " + foodPos.x + ", " + foodPos.y);
 		return foodPos;
 	}
 

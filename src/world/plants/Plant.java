@@ -10,6 +10,10 @@ import interfaces.Drawable;
 
 public class Plant extends Drawable {
 
+	public enum PlantType {GRASS, SMALL, TREE};
+	
+	private PlantType plantType;
+	
 	protected String[] spriteNames;
 	
 	public Plant() {}
@@ -22,13 +26,18 @@ public class Plant extends Drawable {
 		this.position = newPos;
 	}
 	
-	public void setup(String spritePath, Point.Double newPos) {
+	public void setup(String spritePath, Point.Double newPos, PlantType newPlantType) {
 		try {
 			this.sprite = new Image(spritePath);
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 		this.position = newPos;
+		this.plantType = newPlantType;
+	}
+	
+	public PlantType getPlantType() {
+		return this.plantType;
 	}
 	
 }

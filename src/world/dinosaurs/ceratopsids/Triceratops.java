@@ -1,8 +1,10 @@
-package world.dinosaurs;
+package world.dinosaurs.ceratopsids;
 
 import java.awt.Point;
 
 import world.World;
+import world.dinosaurs.Dinosaur;
+import world.dinosaurs.Dinosaur.DIET;
 
 public class Triceratops extends Dinosaur {
 

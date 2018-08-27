@@ -6,7 +6,7 @@ import java.util.List;
 
 import utils.RandomUtils;
 import world.dinosaurs.Dinosaur;
-import world.dinosaurs.Triceratops;
+import world.dinosaurs.ceratopsids.Triceratops;
 
 public class World {
 
