@@ -126,7 +126,8 @@ public class Dinosaur extends Drawable {
 									this.world.getMap()).getPath());
 							pathIndex = 0;
 						} catch (Exception e) {
-							System.out.println(e.getStackTrace());
+							//wants to go off map?
+							System.out.println(e.getStackTrace().toString());
 						}
 					}
 					// System.out.println(waitCounter);
@@ -182,7 +183,7 @@ public class Dinosaur extends Drawable {
 		// trigger hunger or thirst
 		hunger += 0.1;
 
-		if (hunger >= MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT || activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING)) {
+		if (hunger >= MAXHUNGER && (activity != ACTIVITY.HUNTING && activity != ACTIVITY.HUNTING_PLANT && activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING)) {
 			// find and seek food
 			// trigger hunger, search for food, plot path and start moving
 			if (diet == DIET.HERBIVORE) {
@@ -199,7 +200,7 @@ public class Dinosaur extends Drawable {
 
 		if (thirst >= MAXTHIRST) {
 			//if not already eating or drinking
-			if (activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
+			if (activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING && (activity != ACTIVITY.HUNTING && activity != ACTIVITY.HUNTING_PLANT)) {
 				// find and seek water
 				this.speed = PURPOSEFUL_SPEED;
 				System.out.println("HUNTING WATER");

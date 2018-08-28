@@ -72,8 +72,9 @@ public class AStar {
 	 */
 	public AStar(Point.Double startPoint, Point.Double finishPoint, Map level) {
 		System.out.println("ASTAR to " + finishPoint + " from " + startPoint);
-		this.startPoint = startPoint;
-		this.finishPoint = finishPoint;
+		// make sure they are ints
+		this.startPoint = new Point.Double( (int) startPoint.x, (int) startPoint.y);
+		this.finishPoint  = new Point.Double( (int) finishPoint.x, (int) finishPoint.y);
 		this.level = level;
 		this.cost = new HashMap<>();
 		this.parent = new HashMap<>();
@@ -173,6 +174,8 @@ public class AStar {
 	}
 
 	public Point.Double findNearestWater() {
+		System.out.println(" - finding water");
+		
 		this.considered = new ArrayList<>();
 		// quick test to see neither are unreachable
 		if (level.getPos(startPoint) == Biome.SEA || level.getPos(finishPoint) == Biome.SEA) {
@@ -201,7 +204,7 @@ public class AStar {
 			visited.add(current);
 
 			// if at water finish
-			if (level.getPos(current) == Biome.SHALLOW_SEA || level.getPos(current) == Biome.WATER) {
+			if (level.getPos(current) == Biome.SHALLOW_SEA || level.getPos(current) == Biome.WATER || level.getPos(current) == Biome.MARSH) {
 				System.out.println("found water at " + current);
 				return current;
 			}
@@ -209,7 +212,6 @@ public class AStar {
 			for (Point.Double t : removeInvalid(getNeighbours(current, visited))) {
 				// System.out.println("a*: " + t);
 				if (!visited.contains(t)) {
-
 					cost.put(t, cost.get(current) + 1);
 					parent.put(t, current);
 					opened.add(t);
@@ -227,6 +229,7 @@ public class AStar {
 			// just ignore it, it will probably be fine
 		}
 		// if no water return start position
+		System.out.println("done");
 		return startPoint;
 	}
 
@@ -246,7 +249,7 @@ public class AStar {
 			// Remove those which are off the grid or collide with a wall
 			if (!(wall == Biome.SEA)) {
 				validNeighbours.add(p);
-				// System.out.println("adding " + p);
+				//System.out.println("adding " + p);
 			} else {
 			}
 		}

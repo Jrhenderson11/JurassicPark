@@ -3,9 +3,12 @@ package world;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import utils.RandomUtils;
+import version2.Terrain.Biome;
 import world.dinosaurs.Dinosaur;
+import world.dinosaurs.Stegosaurus;
 import world.dinosaurs.ceratopsids.Triceratops;
 
 public class World {
@@ -13,7 +16,7 @@ public class World {
 	Map map;
 	List<Dinosaur> dinos;
 	private boolean labels = false;
-	
+
 	public World() {
 		map = new Map();
 		dinos = new ArrayList<Dinosaur>();
@@ -22,21 +25,29 @@ public class World {
 
 	private void spawnDinos() {
 
-		int numDinos = 1;
-		for (int i =0; i< numDinos;i++) {
-			
-			int x = RandomUtils.randomInt(300, 0);					
-			int y = RandomUtils.randomInt(300, 0);		
-			
-			while (map.getPos(x, y).equals("x") || map.getPos(x, y).equals("w")) {
-				x = RandomUtils.randomInt(300, 0);					
-				y = RandomUtils.randomInt(300, 0);		
+		int numDinos = RandomUtils.randomPosGaussian(6, 2);
+
+		for (int i = 0; i < numDinos; i++) {
+
+			int x = RandomUtils.randomInt(map.getWidth(), 0);
+			int y = RandomUtils.randomInt(map.getWidth(), 0);
+
+			while (map.getPos(x, y) == Biome.SHALLOW_SEA || map.getPos(x, y) == Biome.SEA) {
+				x = RandomUtils.randomInt(map.getWidth(), 0);
+				y = RandomUtils.randomInt(map.getWidth(), 0);
 			}
-			dinos.add(new Triceratops(new Point.Double(x, y), this));
+			switch (new Random().nextInt(2)) {
+				case 0:
+					dinos.add(new Triceratops(new Point.Double(x, y), this));
+					break;
+				case 1:
+					dinos.add(new Stegosaurus(new Point.Double(x, y), this));
+					break;
+			}
+
 			System.out.println("Dinosaur spawned: " + new Point.Double(x, y));
-			
+
 		}
-		
 
 	}
 
@@ -62,5 +73,4 @@ public class World {
 		this.labels = labels;
 	}
 
-	
 }
