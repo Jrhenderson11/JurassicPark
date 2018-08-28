@@ -278,7 +278,7 @@ public class AStar {
 						&& !considered.contains(current)) {
 					neighbours.add(current);
 					considered.add(current);
-					System.out.println(current);
+					//System.out.println(current);
 				}
 			} catch (ArrayIndexOutOfBoundsException e) {
 

@@ -35,8 +35,8 @@ public class Dinosaur extends Drawable {
 	private ACTIVITY activity;
 	private MOOD mood;
 
-	private double MAXHUNGER = 200;
-	private double MAXTHIRST = 200;
+	private double MAXHUNGER;
+	private double MAXTHIRST;
 	private double hunger = 0;
 	private double thirst = 0;
 
@@ -66,6 +66,9 @@ public class Dinosaur extends Drawable {
 		this.activity = ACTIVITY.CHILLING;
 		this.diet = foodType;
 		this.mood = MOOD.CONTENT;
+		this.MAXHUNGER=RandomUtils.randomPosGaussian(500, 100);
+
+		this.MAXTHIRST=RandomUtils.randomPosGaussian(500, 100);
 
 	}
 
@@ -177,9 +180,9 @@ public class Dinosaur extends Drawable {
 		}
 
 		// trigger hunger or thirst
-		// hunger += 0.1;
+		hunger += 0.1;
 
-		if (hunger >= MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
+		if (hunger >= MAXHUNGER && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT || activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING)) {
 			// find and seek food
 			// trigger hunger, search for food, plot path and start moving
 			if (diet == DIET.HERBIVORE) {
@@ -195,7 +198,8 @@ public class Dinosaur extends Drawable {
 		}
 
 		if (thirst >= MAXTHIRST) {
-			if (activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING) {
+			//if not already eating or drinking
+			if (activity != ACTIVITY.HUNTING_WATER && activity != ACTIVITY.DRINKING && (activity != ACTIVITY.HUNTING || activity != ACTIVITY.HUNTING_PLANT)) {
 				// find and seek water
 				this.speed = PURPOSEFUL_SPEED;
 				System.out.println("HUNTING WATER");
@@ -222,8 +226,6 @@ public class Dinosaur extends Drawable {
 			if (next.distance(this.position) < speed) {
 				this.move(next);
 				pathIndex++;
-				// path.remove();
-				// System.out.println("next");
 			} else {
 
 				// move X
@@ -244,9 +246,7 @@ public class Dinosaur extends Drawable {
 
 		} else {
 			// System.out.println("hmm path is done?");
-			// for (Point.Double p : path) {
-			// System.out.println(p);
-			// }
+			// for (Point.Double p : path) System.out.println(p);
 		}
 
 	}

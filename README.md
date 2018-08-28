@@ -12,6 +12,17 @@ A* path finding code written by https://github.com/lucykgriffiths
 
 plant art from https://ansimuz.itch.io/trees-bushes-sprites and other places on the interwebs (google plant with clip art filter or search 'ascii plant art')
 
+## Dinosaurs (to add)
+ - Brontosaurus
+ - Stegasaurus
+ - Diplodocus
+ - other sauropods
+ - Pacycephalosaurus
+ - Corinthysaurus
+ - Icthyosaur
+ - Crocodiles???
+ - Gallilimus
+
 ## TODO:
 
  - add more dinosaurs
@@ -23,3 +34,4 @@ plant art from https://ansimuz.itch.io/trees-bushes-sprites and other places on 
  - add flowers
  - rivers
  - log4j
+ - more efficient plant placing

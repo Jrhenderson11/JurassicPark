@@ -8,14 +8,14 @@ import java.util.stream.Collectors;
 
 import version2.Terrain;
 import version2.Terrain.Biome;
-import world.plants.Beech;
-import world.plants.Bush;
-import world.plants.Cactus;
-import world.plants.Fern;
-import world.plants.Fir;
-import world.plants.Grass;
 import world.plants.Plant;
 import world.plants.Plant.PlantType;
+import world.plants.grass.Grass;
+import world.plants.smallplants.Bush;
+import world.plants.smallplants.Fern;
+import world.plants.trees.Beech;
+import world.plants.trees.Cactus;
+import world.plants.trees.Fir;
 
 public class Map {
 

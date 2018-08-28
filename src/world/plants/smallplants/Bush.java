@@ -1,7 +1,10 @@
-package world.plants;
+package world.plants.smallplants;
 
 import java.awt.Point;
 import java.util.Random;
+
+import world.plants.Plant;
+import world.plants.Plant.PlantType;
 
 public class Bush extends Plant {
 	
