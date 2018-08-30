@@ -69,6 +69,7 @@ public class Map {
 
 	public void generateNewMap(String type) {
 		terrain = new Terrain(600);
+		terrain.setWaterDistMap(terrain.generateWaterDistMap());
 	}
 
 	public Terrain getTerrain() {
@@ -111,4 +112,7 @@ public class Map {
 		return terrain.getElevation()[(int) x][(int) y];
 	}
 
+	public double getPosWaterDist(Point.Double p) {
+		return terrain.getWaterDistMap()[(int) p.x][(int) p.y];
+	}
 }

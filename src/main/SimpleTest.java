@@ -43,6 +43,7 @@ public class SimpleTest extends BasicGame {
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
+		//container.setIcon("assets/stegosaurus.png");
 		input = container.getInput();
 		keysPressed = new LinkedHashSet<Integer>();
 		addListeners();
@@ -52,7 +53,6 @@ public class SimpleTest extends BasicGame {
 
 		System.out.println("[*] made world");
 		this.zoomLevel = world.getMap().getWidth();
-
 		Terrain terrain = world.getMap().getTerrain();
 		width = terrain.getSize();
 		height = terrain.getSize();

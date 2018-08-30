@@ -123,7 +123,7 @@ public class Dinosaur extends Drawable {
 								terrain = world.getMap().getPos(new Point.Double(position.x + dX, position.y + dY));
 							}
 							path = (new AStar(this.position, new Point.Double(position.x + dX, position.y + dY),
-									this.world.getMap()).getPath());
+									this.world.getMap()).getPath(false));
 							pathIndex = 0;
 						} catch (Exception e) {
 							//wants to go off map?
@@ -192,7 +192,7 @@ public class Dinosaur extends Drawable {
 				this.activity = ACTIVITY.HUNTING_PLANT;
 
 				this.path = (new AStar(new Point.Double((int) this.position.getX(), (int) this.position.getY()),
-						findNearestFood(), this.world.getMap()).getPath());
+						findNearestFood(), this.world.getMap()).getPath(false));
 				System.out.println("length: " + path.size());
 				pathIndex = 0;
 			}
@@ -206,7 +206,7 @@ public class Dinosaur extends Drawable {
 				System.out.println("HUNTING WATER");
 				this.activity = ACTIVITY.HUNTING_WATER;
 				AStar astar = new AStar(this.position, findNearestFood(), this.world.getMap());
-				this.path = (new AStar(this.position, astar.findNearestWater(), this.world.getMap()).getPath());
+				this.path = (new AStar(this.position, astar.findNearestWater(), this.world.getMap()).getPath(true));
 				System.out.println("length: " + path.size());
 				pathIndex = 0;
 			}

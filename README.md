@@ -14,7 +14,6 @@ plant art from https://ansimuz.itch.io/trees-bushes-sprites and other places on 
 
 ## Dinosaurs (to add)
  - Brontosaurus
- - Stegasaurus
  - Diplodocus
  - other sauropods
  - Pacycephalosaurus
@@ -26,7 +25,6 @@ plant art from https://ansimuz.itch.io/trees-bushes-sprites and other places on 
 ## TODO:
 
  - add more dinosaurs
- - enhance behaviours
  - astar in new thread
  - randomize thirst / hunger amounts
  - add nutrients to plants
@@ -35,3 +33,10 @@ plant art from https://ansimuz.itch.io/trees-bushes-sprites and other places on 
  - rivers
  - log4j
  - more efficient plant placing
+ - improve AI:
+ 	different dinosaurs have different habits
+ 	relationships between dinosaurs
+ 	sleeping?
+ 	families
+ 	prefer different terrain types
+ 	eat different plants

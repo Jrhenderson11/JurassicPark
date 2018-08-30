@@ -15,6 +15,7 @@ import drawer.Gradient;
 import interfaces.Drawable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import version2.Noise;
 import version2.Terrain;
 import version2.Terrain.Biome;
 import world.Map;
@@ -25,7 +26,7 @@ import world.plants.Plant;
 public class Renderer {
 
 	private enum Mode {
-		TERRAIN, HEIGHTMAP, MOISTURE
+		TERRAIN, HEIGHTMAP, MOISTURE, WATERDIST
 	}
 
 	private Mode mode = Mode.TERRAIN;
@@ -38,9 +39,9 @@ public class Renderer {
 	private static Color GREY = new Color(98f, 102f, 101f);
 	private static Color LIGHT_BLUE = new Color(114f, 219f, 245f);
 	private static Color DARK_GREEN = new Color(50f, 86f, 29f);
-	private static Color MARSH = BLUE;//new Color(77f, 94f, 119f);
-	private static Color SHRUB = new Color(148f, 111f, 11f); //MUD colour!!!!
-	private static Color DRIED_MUD = new Color(163f, 154f, 105f);//dried mud
+	private static Color MARSH = BLUE;// new Color(77f, 94f, 119f);
+	private static Color SHRUB = new Color(148f, 111f, 11f); // MUD colour!!!!
+	private static Color DRIED_MUD = new Color(163f, 154f, 105f);// dried mud
 	private static Color SAVANNAH = new Color(167f, 187f, 41f);
 	private static Color DECIDUOUS = new Color(61f, 153f, 34f);
 	private static Color RAINFOREST = new Color(17f, 109f, 26f);
@@ -53,6 +54,7 @@ public class Renderer {
 	private Image terrainBackground = null;
 	private Image heightmapBackground = null;
 	private Image moisturemapBackground = null;
+	private Image waterDistBackground = null;
 
 	public Renderer() {
 		fillColourTable();
@@ -68,7 +70,7 @@ public class Renderer {
 		BIOME_COLOUR_TABLE.put(Biome.SHRUBLAND, SHRUB);
 		BIOME_COLOUR_TABLE.put(Biome.GRASSLAND, GRASS);
 		BIOME_COLOUR_TABLE.put(Biome.SAVANNAH, SAVANNAH);
-		//BIOME_COLOUR_TABLE.put(Biome.TAIGA, DRIED_MUD);
+		// BIOME_COLOUR_TABLE.put(Biome.TAIGA, DRIED_MUD);
 		BIOME_COLOUR_TABLE.put(Biome.FOREST, DARK_GREEN);
 		BIOME_COLOUR_TABLE.put(Biome.FERNLAND, DECIDUOUS);
 		BIOME_COLOUR_TABLE.put(Biome.TEMPERATE_RAIN_FOREST, JUNGLE);
@@ -78,7 +80,7 @@ public class Renderer {
 		BIOME_COLOUR_TABLE.put(Biome.MARSH, MARSH);
 		BIOME_COLOUR_TABLE.put(Biome.BARE, GREY);
 		BIOME_COLOUR_TABLE.put(Biome.DRIED_MUD, DRIED_MUD);
-		//BIOME_COLOUR_TABLE.put(Biome.SNOW, MARSH);
+		// BIOME_COLOUR_TABLE.put(Biome.SNOW, MARSH);
 		// normalise
 		for (Biome b : BIOME_COLOUR_TABLE.keySet()) {
 			Color c = BIOME_COLOUR_TABLE.get(b);
@@ -184,6 +186,34 @@ public class Renderer {
 			e.printStackTrace();
 		}
 
+		double[][] scaledWaterDistMap = Noise.scaleAndInvertIntGrid(map.getTerrain().getWaterDistMap());
+		for (int iY = coords.y; iY < coords.y + zoomLevel; iY++) {
+			for (int iX = coords.x; iX < coords.x + zoomLevel; iX++) {
+
+				try {
+					double[] test = grad.apply(scaledWaterDistMap[iX][iY]);
+
+					g.setColor(new Color((float) test[0] / 255f, (float) test[1] / 255f, (float) test[2] / 255f));
+					Rectangle rect = new Rectangle((float) ((iX - coords.x) * cell_width),
+							(float) ((iY - coords.y) * cell_height), (float) Math.ceil(cell_width),
+							(float) Math.ceil(cell_height));
+
+					g.draw(rect);
+					g.fill(rect);
+				} catch (Exception e) {
+					// System.out.println("rendering went wrong");
+				}
+			}
+		}
+		try {
+			waterDistBackground = new Image(container.getWidth(), container.getHeight());
+			g.copyArea(waterDistBackground, 0, 0);
+			g.flush();
+
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void drawWorld(World world, Point coords, int zoomLevel, Canvas canvas) {
@@ -205,6 +235,8 @@ public class Renderer {
 			drawHeightMap(world.getMap().getTerrain().getMoisture(), coords, zoomLevel, canvas);
 		} else if (mode == Mode.HEIGHTMAP) {
 			drawHeightMap(world.getMap().getTerrain().getElevation(), coords, zoomLevel, canvas);
+		} else if (mode == Mode.WATERDIST) {
+
 		}
 
 	}
@@ -224,12 +256,9 @@ public class Renderer {
 					drawLabelSlick(d, coords, zoomLevel, container, g);
 				}
 			}
-		} else if (mode == Mode.MOISTURE) {
-			drawHeightMapSlick(world.getMap(), coords, zoomLevel, container, g, false);
-		} else if (mode == Mode.HEIGHTMAP) {
-			drawHeightMapSlick(world.getMap(), coords, zoomLevel, container, g, true);
-		}
-
+		} else {
+			drawHeightMapSlick(world.getMap(), coords, zoomLevel, container, g, mode);
+		} 
 	}
 
 	private void drawMap(Map map, Point coords, int zoomLevel, Canvas canvas) {
@@ -288,16 +317,16 @@ public class Renderer {
 	}
 
 	private void drawHeightMapSlick(Map map, Point coords, int zoomLevel, GameContainer container, Graphics g,
-			boolean elev) {
+			Mode mode) {
 		float cell_width = container.getWidth() / (float) zoomLevel;
 		float cell_height = container.getHeight() / (float) zoomLevel;
 		Image scaledBackground;
-		if (elev) {
+		if (mode == Mode.HEIGHTMAP) {
 			scaledBackground = heightmapBackground.getScaledCopy(((float) map.getWidth() / (float) zoomLevel));
-
-		} else {
+		} else if (mode == Mode.MOISTURE) {
 			scaledBackground = moisturemapBackground.getScaledCopy(((float) map.getWidth() / (float) zoomLevel));
-
+		} else {
+			scaledBackground = waterDistBackground.getScaledCopy(((float) map.getWidth() / (float) zoomLevel));
 		}
 
 		g.drawImage(scaledBackground, ((float) 0 - (coords.x * cell_width)), ((float) 0 - (coords.y * cell_height)));
@@ -333,18 +362,18 @@ public class Renderer {
 		float cellHeight = container.getHeight() / (float) zoomLevel;
 
 		Image sprite = d.getSprite().getScaledCopy((1 / ((float) zoomLevel)) * 40);
-		
+
 		float imgWidth = (float) sprite.getWidth();
 		float imgHeight = (float) sprite.getHeight();
 
-		//System.out.println(imgWidth);
-		if (d.getPos().x > coords.x-5 && d.getPos().x < coords.x + zoomLevel + 5 && d.getPos().y > coords.y-7
-				&& d.getPos().y < coords.y + zoomLevel+7) {
+		// System.out.println(imgWidth);
+		if (d.getPos().x > coords.x - 5 && d.getPos().x < coords.x + zoomLevel + 5 && d.getPos().y > coords.y - 7
+				&& d.getPos().y < coords.y + zoomLevel + 7) {
 			if (d.getDirection() == -1) {
 				sprite = sprite.getFlippedCopy(true, false);
 			}
 			// System.out.println("imgwidth: " + imgWidth);
-			float x = (float) (((d.getPos().x - coords.x) * cellWidth) - imgWidth/2);
+			float x = (float) (((d.getPos().x - coords.x) * cellWidth) - imgWidth / 2);
 			float y = (float) (((d.getPos().y - coords.y) * cellHeight) - imgHeight);
 			g.drawImage(sprite, x, y);
 		}
@@ -370,7 +399,7 @@ public class Renderer {
 			g.drawString(d.getName(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight + (13 * 3))));
 
 			// activity
-			g.drawString(d.getActivity().toString(), (float) dinoPos.x,	(float) (dinoPos.y - (imgHeight + (13 * 2))));
+			g.drawString(d.getActivity().toString(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight + (13 * 2))));
 			// mood
 			g.drawString(d.getMood().toString(), (float) dinoPos.x, (float) (dinoPos.y - (imgHeight + (13 * 1))));
 
@@ -382,7 +411,9 @@ public class Renderer {
 			mode = Mode.HEIGHTMAP;
 		} else if (mode == Mode.HEIGHTMAP) {
 			mode = Mode.MOISTURE;
-		} else {
+		} else if (mode == Mode.MOISTURE) {
+			mode = Mode.WATERDIST;
+		} else if (mode==Mode.WATERDIST){
 			mode = Mode.TERRAIN;
 		}
 	}
